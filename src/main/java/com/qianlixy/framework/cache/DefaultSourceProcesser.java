@@ -45,7 +45,7 @@ public class DefaultSourceProcesser implements SourceProcesser {
 				isFinishSqlParse = true;
 			if (!isFinishSqlParse) {
 				throw new SqlParseException(
-						(Throwable) threadLocalContext.getAttribute(Context.THREAD_LOCAL_KEY_THROWABLE));
+						(Throwable) threadLocalContext.getAttribute(Context.THREAD_LOCAL_KEY_PARSING_THROWABLE));
 			}
 			if (null == source)
 				isNull = true;

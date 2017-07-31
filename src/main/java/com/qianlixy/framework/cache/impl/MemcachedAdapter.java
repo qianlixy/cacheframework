@@ -32,12 +32,12 @@ public class MemcachedAdapter implements CacheClient {
 	}
 	
 	@Override
-	public boolean put(String key, Object value) {
-		return put(key, value, 0);
+	public boolean set(String key, Object value) {
+		return set(key, value, 0);
 	}
 
 	@Override
-	public boolean put(final String key, final Object value, final int time) {
+	public boolean set(final String key, final Object value, final int time) {
 		try {
 			return client.set(key, time, value);
 		} catch (TimeoutException e) {

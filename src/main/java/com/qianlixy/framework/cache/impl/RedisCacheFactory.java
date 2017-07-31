@@ -12,7 +12,7 @@ import redis.clients.jedis.Jedis;
  * @author qianli_xy@163.com
  * @since 1.7
  */
-public class RedisCacheFactory extends AbstractCacheFactory<Jedis> {
+public class RedisCacheFactory extends AbstractCacheClientFactory<Jedis> {
 
 	@Override
 	public CacheClient buildCacheClient() {

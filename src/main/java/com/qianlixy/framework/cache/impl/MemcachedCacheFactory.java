@@ -7,7 +7,7 @@ import com.qianlixy.framework.cache.CollectionCacheClient;
 
 import net.rubyeye.xmemcached.MemcachedClient;
 
-public class MemcachedCacheFactory extends AbstractCacheFactory<MemcachedClient> {
+public class MemcachedCacheFactory extends AbstractCacheClientFactory<MemcachedClient> {
 
 	@Override
 	public CacheClient buildCacheClient() throws IOException {

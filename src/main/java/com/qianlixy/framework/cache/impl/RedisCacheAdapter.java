@@ -22,12 +22,12 @@ public class RedisCacheAdapter implements CacheClient {
 	}
 
 	@Override
-	public boolean put(String key, Object value) {
+	public boolean set(String key, Object value) {
 		return false;
 	}
 
 	@Override
-	public boolean put(String key, Object value, int time) {
+	public boolean set(String key, Object value, int time) {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -35,7 +35,7 @@ public class CollectionMemcachedAdapter extends MemcachedAdapter implements Coll
 	public boolean putMap(String mapKey, String key, Object value) {
 		Map<Object, Object> map = getMap(mapKey);
 		map.put(key, value);
-		return put(mapKey, map);
+		return set(mapKey, map);
 	}
 
 	@Override
@@ -65,21 +65,21 @@ public class CollectionMemcachedAdapter extends MemcachedAdapter implements Coll
 	public boolean putSet(String key, Object value) {
 		Set<Object> set = getSet(key);
 		set.add(value);
-		return put(key, set);
+		return set(key, set);
 	}
 	
 	@Override
 	public boolean putList(String key, Object value) {
 		List<Object> list = getList(key);
 		list.add(value);
-		return put(key, list);
+		return set(key, list);
 	}
 
 	@Override
 	public boolean putList(String key, int index, Object value) {
 		List<Object> list = getList(key);
 		list.add(index, value);
-		return put(key, list);
+		return set(key, list);
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class CollectionMemcachedAdapter extends MemcachedAdapter implements Coll
 	public boolean removeList(String key, Object value) {
 		List<Object> list = getList(key);
 		boolean isRemove = list.remove(value);
-		put(key, list);
+		set(key, list);
 		return isRemove;
 	}
 
@@ -105,7 +105,7 @@ public class CollectionMemcachedAdapter extends MemcachedAdapter implements Coll
 	public Object removeList(String key, int index) {
 		List<Object> list = getList(key);
 		Object isRemove = list.remove(index);
-		put(key, list);
+		set(key, list);
 		return isRemove;
 	}
 
@@ -113,7 +113,7 @@ public class CollectionMemcachedAdapter extends MemcachedAdapter implements Coll
 	public boolean putSet(String key, Collection<Object> values) {
 		Set<Object> set = getSet(key);
 		boolean isAdd = set.addAll(values);
-		put(key, set);
+		set(key, set);
 		return isAdd;
 	}
 
@@ -121,7 +121,7 @@ public class CollectionMemcachedAdapter extends MemcachedAdapter implements Coll
 	public boolean putList(String key, Collection<Object> values) {
 		List<Object> list = getList(key);
 		boolean isAdd = list.addAll(values);
-		put(key, list);
+		set(key, list);
 		return isAdd;
 	}
 

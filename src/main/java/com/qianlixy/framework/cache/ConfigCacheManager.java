@@ -3,7 +3,6 @@ package com.qianlixy.framework.cache;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import com.qianlixy.framework.cache.context.CacheMethodContext;
@@ -31,7 +30,7 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 	public void init() throws Exception {
 		CollectionCacheClient collectionCacheClient = null;
 		try {
-			collectionCacheClient = cacheFactory.buildCollectionCacheClient();
+			collectionCacheClient = cacheClientFactory.buildCollectionCacheClient();
 		} catch (Exception e) {
 			LOGGER.error("Cache manager init fail while build cache client", e);
 			throw e;
@@ -48,21 +47,20 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 	}
 
 	@Override
-	public Object doCache(JoinPoint joinPoint) throws Throwable {
-		ProceedingJoinPoint pjp = (ProceedingJoinPoint) joinPoint;
+	public Object doCache(ProceedingJoinPoint joinPoint) throws Throwable {
 		if(!isProxyCached) {
-			return pjp.proceed();
+			return joinPoint.proceed();
 		}
 		LOGGER.debug("Start intercepte method [{}]", joinPoint.getSignature().toLongString());
 		long startTime = new Date().getTime();
-		SourceProcesser sourceProcesser = new DefaultSourceProcesser(pjp, threadLocalContext);
+		SourceProcesser sourceProcesser = new DefaultSourceProcesser(joinPoint, threadLocalContext);
 		try {
 			// 注册缓存方法
-			cacheMethodContext.registerCacheMethod(pjp);
+			cacheMethodContext.registerCacheMethod(joinPoint);
 			// 拦截器依次拦截
 			return filterChain.doFilter(sourceProcesser, 
 					new DefaultCacheProcesser(cacheMethodContext, sourceProcesser, 
-							cacheFactory.buildCollectionCacheClient(), defaultCacheTime), 
+							cacheClientFactory.buildCollectionCacheClient(), defaultCacheTime), 
 					threadLocalContext, filterChain);
 		} catch (NonImplToStringException e) {
 			LOGGER.warn("Cannot get cache by {}", e.getMessage());

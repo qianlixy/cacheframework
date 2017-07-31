@@ -36,7 +36,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 			return;
 		}
 		if(sourceProcesser.isQuery()) {
-			collectionCacheClient.put(dynamicUniqueMark, source, time);
+			collectionCacheClient.set(dynamicUniqueMark, source, time);
 			try {
 				collectionCacheClient.putMap(Context.CACHE_KEY_METHOD_LAST_QUERY_TIME_MAP, 
 						dynamicUniqueMark, collectionCacheClient.consistentTime());
@@ -44,7 +44,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 				throw new CacheOperationException(e);
 			}
 		}
-		collectionCacheClient.put(dynamicUniqueMark, source, time);
+		collectionCacheClient.set(dynamicUniqueMark, source, time);
 	}
 	
 	@Override

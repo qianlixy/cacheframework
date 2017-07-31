@@ -28,7 +28,7 @@ public class SqlParseContext extends ContextDecorator {
 		}
 		sqls.add(sql);
 		sqlMap.put(cacheMethodContext.getCacheMethodStaticUniqueMark(), sqls);
-		cacheClient.put(CACHE_KEY_METHOD_SQL_MAP, sqlMap);
+		cacheClient.set(CACHE_KEY_METHOD_SQL_MAP, sqlMap);
 	}
 
 	public void addCacheMethodTable(String table) {
@@ -39,7 +39,7 @@ public class SqlParseContext extends ContextDecorator {
 		}
 		tables.add(table);
 		tableMap.put(cacheMethodContext.getCacheMethodStaticUniqueMark(), tables);
-		cacheClient.put(CACHE_KEY_METHOD_TABLE_MAP, tableMap);
+		cacheClient.set(CACHE_KEY_METHOD_TABLE_MAP, tableMap);
 	}
 	
 	public void setTableLastAlterTime(String tabel, long time) {
@@ -63,7 +63,7 @@ public class SqlParseContext extends ContextDecorator {
 	}
 	
 	public void setThrowable(Throwable th) {
-		setAttribute(THREAD_LOCAL_KEY_THROWABLE, th);
+		setAttribute(THREAD_LOCAL_KEY_PARSING_THROWABLE, th);
 	}
 
 }
