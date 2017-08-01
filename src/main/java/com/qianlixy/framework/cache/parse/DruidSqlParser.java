@@ -50,17 +50,17 @@ public class DruidSqlParser extends FilterEventAdapter implements SqlParser {
 		try {
 			String dbType = getDbType(statement);
 			boolean isAlter = false;
-			LOGGER.debug("Intercepted sql : [" + sql + "]");
-			context.addCacheMethodSql(sql);
+			LOGGER.debug("Intercepted sql : [{}]", sql);
+			//context.addCacheMethodSql(sql);
 			List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, dbType.toLowerCase());
 			for (SQLStatement sqlStatement : stmtList) {
 				MySqlSchemaStatVisitor visitor = new MySqlSchemaStatVisitor();
 				sqlStatement.accept(visitor);
 				Map<Name, TableStat> tableMap = visitor.getTables();
-				LOGGER.debug("Intercepted table stat : " + tableMap);
+				LOGGER.debug("Intercepted table stat : {}", tableMap);
 				for (Name name : tableMap.keySet()) {
 					String tableName = name.getName();
-					LOGGER.debug("Intercepted table : " + tableName);
+					LOGGER.debug("Intercepted table : {}", tableName);
 					context.addCacheMethodTable(tableName.toLowerCase());
 					TableStat tableStat = tableMap.get(name);
 					if (tableStat.getInsertCount() > 0
@@ -74,7 +74,7 @@ public class DruidSqlParser extends FilterEventAdapter implements SqlParser {
 			context.setIsAlter(isAlter);
 			context.setIsQuery(!isAlter);
 		} catch (Throwable th) {
-			LOGGER.error("Occur exception while parse sql ", th);
+			LOGGER.error("Occur exception while parse sql", th);
 			context.SetIsFinishSqlParse(false);
 			context.setThrowable(th);
 		}
