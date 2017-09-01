@@ -1,8 +1,9 @@
-package com.qianlixy.framework.cache;
+package com.qianlixy.framework.cache.wrapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qianlixy.framework.cache.CacheManager;
 import com.qianlixy.framework.cache.parse.SqlParser;
 
 /**

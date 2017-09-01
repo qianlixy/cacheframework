@@ -1,6 +1,5 @@
 package com.qianlixy.framework.cache;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,24 +9,27 @@ import com.qianlixy.framework.cache.context.SqlParseContext;
 import com.qianlixy.framework.cache.context.ThreadLocalContext;
 import com.qianlixy.framework.cache.exception.NonImplToStringException;
 import com.qianlixy.framework.cache.filter.FilterChain;
-import com.qianlixy.framework.cache.filter.ReturnExistValidCacheFilter;
-import com.qianlixy.framework.cache.filter.ReturnSourceNotExistValidCacheFilter;
+import com.qianlixy.framework.cache.wrapper.DefaultCacheProcesser;
+import com.qianlixy.framework.cache.wrapper.DefaultSourceProcesser;
+import com.qianlixy.framework.cache.wrapper.SourceProcesser;
 
+/**
+ * 缓存管理类
+ * @author qianli_xy@163.com
+ * @since 1.7
+ */
 public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 	
+	/*
+	 * 线程区域上下文对象，主要用于存放SQL解析结果和Filter线程变量
+	 */
 	private ThreadLocalContext threadLocalContext;
 	private CacheMethodContext cacheMethodContext;
 	private FilterChain filterChain;
 	
-	public ConfigCacheManager() {
-		// 赋默认值
-		this.filters = new ArrayList<>();
-		this.filters.add(new ReturnSourceNotExistValidCacheFilter());
-		this.filters.add(new ReturnExistValidCacheFilter());
-	}
-	
 	@Override
 	public void init() throws Exception {
+		// 初始化缓存客户端
 		CollectionCacheClient collectionCacheClient = null;
 		try {
 			collectionCacheClient = cacheClientFactory.buildCollectionCacheClient();
@@ -40,10 +42,12 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 		threadLocalContext = new ThreadLocalContext();
 		cacheMethodContext = new CacheMethodContext(threadLocalContext);
 		
+		// 初始化Sql解析器
 		sqlParser.setSqlParseContext(new SqlParseContext(cacheMethodContext, collectionCacheClient));
 		
 		// 初始化拦截器链
-		filterChain = new FilterChain(filters);
+		filterChain = new FilterChain();
+		filterChain.init(this);
 	}
 
 	@Override
@@ -72,7 +76,7 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 		} finally {
 			if(LOGGER.isDebugEnabled()) {
 				long endTime = new Date().getTime();
-				LOGGER.debug("Intercepted method end and cache method's total exec time is {} ms", 
+				LOGGER.debug("Intercepte method finished and cache method's total exec time is {} ms", 
 						endTime - startTime);
 			}
 		}

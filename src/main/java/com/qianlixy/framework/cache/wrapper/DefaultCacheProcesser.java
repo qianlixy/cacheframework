@@ -1,8 +1,10 @@
-package com.qianlixy.framework.cache;
+package com.qianlixy.framework.cache.wrapper;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import com.qianlixy.framework.cache.CacheClient;
+import com.qianlixy.framework.cache.CollectionCacheClient;
 import com.qianlixy.framework.cache.context.CacheMethodContext;
 import com.qianlixy.framework.cache.context.Context;
 import com.qianlixy.framework.cache.exception.CacheOperationException;
@@ -31,10 +33,6 @@ public class DefaultCacheProcesser implements CacheProcesser {
 	public void putCache(Object source, int time) throws CacheOperationException {
 		String dynamicUniqueMark = cacheMethodContext.getCacheMethodDynamicUniqueMark();
 		if(sourceProcesser.isAlter()) return;
-		if(null == source) {
-			LOGGER.warn("DB data is null by method [{}]", sourceProcesser.getFullMethodName());
-			return;
-		}
 		if(sourceProcesser.isQuery()) {
 			collectionCacheClient.set(dynamicUniqueMark, source, time);
 			try {

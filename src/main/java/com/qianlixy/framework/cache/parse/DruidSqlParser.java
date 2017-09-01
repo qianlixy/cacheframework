@@ -57,10 +57,10 @@ public class DruidSqlParser extends FilterEventAdapter implements SqlParser {
 				MySqlSchemaStatVisitor visitor = new MySqlSchemaStatVisitor();
 				sqlStatement.accept(visitor);
 				Map<Name, TableStat> tableMap = visitor.getTables();
-				LOGGER.debug("Intercepted table stat : {}", tableMap);
+//				LOGGER.debug("Intercepted table stat : {}", tableMap);
 				for (Name name : tableMap.keySet()) {
 					String tableName = name.getName();
-					LOGGER.debug("Intercepted table : {}", tableName);
+//					LOGGER.debug("Intercepted table : {}", tableName);
 					context.addCacheMethodTable(tableName.toLowerCase());
 					TableStat tableStat = tableMap.get(name);
 					if (tableStat.getInsertCount() > 0

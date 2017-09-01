@@ -3,9 +3,10 @@ package com.qianlixy.framework.cache.filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qianlixy.framework.cache.CacheProcesser;
-import com.qianlixy.framework.cache.SourceProcesser;
+import com.qianlixy.framework.cache.AbstractConfig;
 import com.qianlixy.framework.cache.context.Context;
+import com.qianlixy.framework.cache.wrapper.CacheProcesser;
+import com.qianlixy.framework.cache.wrapper.SourceProcesser;
 
 /**
  * <h1>过滤器 </h1>
@@ -17,6 +18,9 @@ public interface Filter {
 	
 	/** 日志打印。子类使用该日志对象打印日志，便于日志打印管理 */
 	Logger LOGGER = LoggerFactory.getLogger(Filter.class);
+	
+	
+	void init(AbstractConfig config);
 
 	/**
 	 * <p>源方法过滤处理 </p>

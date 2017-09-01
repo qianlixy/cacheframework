@@ -1,7 +1,11 @@
-package com.qianlixy.framework.cache;
+package com.qianlixy.framework.cache.wrapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.qianlixy.framework.cache.AbstractConfig;
+import com.qianlixy.framework.cache.CacheClient;
+import com.qianlixy.framework.cache.CacheManager;
 
 /**
  * <p>定义对缓存的处理包装接口</p>

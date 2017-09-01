@@ -1,8 +1,5 @@
 package com.qianlixy.framework.cache;
 
-import java.util.List;
-
-import com.qianlixy.framework.cache.filter.Filter;
 import com.qianlixy.framework.cache.impl.AbstractCacheClientFactory;
 import com.qianlixy.framework.cache.parse.SqlParser;
 
@@ -23,14 +20,8 @@ public abstract class AbstractConfig {
 	protected int defaultCacheTime = 3600;
 	
 	/**
-	 * 对源方法的过滤器,具体的缓存策略都在过滤器中实现
-	 * @see Filter
-	 */
-	protected List<Filter> filters;
-	
-	/**
 	 * <p>是否过滤源方法，不过滤源方法意味着不对源方法做缓存处理 </p>
-	 * <p>可能存在一些应用不需要缓存处理，可以将该参数设置为false。注意，SqlParser还是会解析SQL，因为要通知其他缓存过滤器做缓存处理 </p>
+	 * <p>可能存在一些应用不需要缓存处理，可以将该参数设置为false。注意，SqlParser还是会解析SQL，因为要通知缓存过滤器做缓存处理 </p>
 	 * <p>默认值为true </p>
 	 */
 	protected Boolean isProxyCached = true;
@@ -47,11 +38,15 @@ public abstract class AbstractConfig {
 		this.defaultCacheTime = defaultCacheTime;
 	}
 
-	public void setFilters(List<Filter> filters) {
-		this.filters = filters;
-	}
-
 	public void setIsProxyCached(Boolean isProxyCached) {
 		this.isProxyCached = isProxyCached;
+	}
+
+	public int getDefaultCacheTime() {
+		return defaultCacheTime;
+	}
+
+	public Boolean getIsProxyCached() {
+		return isProxyCached;
 	}
 }

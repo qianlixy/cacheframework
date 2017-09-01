@@ -1,28 +1,27 @@
 package com.qianlixy.framework.cache.filter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.qianlixy.framework.cache.CacheProcesser;
-import com.qianlixy.framework.cache.SourceProcesser;
+import com.qianlixy.framework.cache.AbstractConfig;
 import com.qianlixy.framework.cache.context.Context;
+import com.qianlixy.framework.cache.wrapper.CacheProcesser;
+import com.qianlixy.framework.cache.wrapper.SourceProcesser;
 
+/**
+ * 过滤器链发起者，依次调用过滤器
+ * @author qianli_xy@163.com
+ * @since 1.7
+ */
 public class FilterChain implements Filter {
-	
+
+	// 当前线程正在执行过滤器所在链的位置索引的上下文key
 	private static final String FILTER_INDEX = UUID.randomUUID().toString();
 	
+	// 过滤器集合
 	private List<Filter> filters;
 	
-	public FilterChain() {}
-	
-	public FilterChain(List<Filter> filters) {
-		this.filters = filters;
-	}
-	
-	public void setFilters(List<Filter> filters) {
-		this.filters = filters;
-	}
-
 	@Override
 	public Object doFilter(SourceProcesser sourceProcesser, CacheProcesser cacheProcesser, 
 			Context context, FilterChain chain) throws Throwable {
@@ -42,6 +41,18 @@ public class FilterChain implements Filter {
 		}
 		context.removeAttribute(FILTER_INDEX);
 		return sourceProcesser.doProcess();
+	}
+
+	@Override
+	public void init(AbstractConfig config) {
+		// 注册过滤器
+		filters = new ArrayList<>();
+		filters.add(new ReturnSourceNotExistValidCacheFilter());
+		filters.add(new ReturnExistValidCacheFilter());
+		
+		for (Filter filter : filters) {
+			filter.init(config);
+		}
 	}
 
 }
