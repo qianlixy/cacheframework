@@ -1,5 +1,7 @@
 package com.qianlixy.framework.cache;
 
+import java.util.List;
+
 import com.qianlixy.framework.cache.impl.AbstractCacheClientFactory;
 import com.qianlixy.framework.cache.parse.SqlParser;
 
@@ -26,6 +28,12 @@ public abstract class AbstractConfig {
 	 */
 	protected Boolean isProxyCached = true;
 	
+	/**
+	 * <p>需要缓存的方法匹配表达式</p>
+	 * <p>
+	 */
+	private List<String> cacheMethods;
+	
 	public void setCacheFactory(AbstractCacheClientFactory<?> cacheFactory) {
 		this.cacheClientFactory = cacheFactory;
 	}
@@ -48,5 +56,13 @@ public abstract class AbstractConfig {
 
 	public Boolean getIsProxyCached() {
 		return isProxyCached;
+	}
+	
+	public List<String> getCacheMethods() {
+		return cacheMethods;
+	}
+
+	public void setCacheMethods(List<String> cacheMethods) {
+		this.cacheMethods = cacheMethods;
 	}
 }
