@@ -11,7 +11,7 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 	default-autowire="byName" default-lazy-init="true">
 
-	<context:component-scan base-package="com.qianlixy.framework.cache" />
+	<context:component-scan base-package="io.github.qianlixy.cache" />
 
 	<tx:annotation-driven mode="aspectj" />
 
@@ -58,7 +58,7 @@
 			<list>
 				<bean class="java.net.InetSocketAddress">
 					<constructor-arg>
-						<value>memcached.qianli.com</value>
+						<value>192.168.206.100</value>
 					</constructor-arg>
 					<constructor-arg>
 						<value>11211</value>

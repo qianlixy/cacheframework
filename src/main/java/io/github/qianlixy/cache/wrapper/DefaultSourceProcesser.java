@@ -15,7 +15,7 @@ import io.github.qianlixy.cache.exception.SqlParseException;
 public class DefaultSourceProcesser implements SourceProcesser {
 
 	private Object source = null;
-	private boolean isNull = false;
+	private boolean isExecuted = false;
 	
 	private ProceedingJoinPoint pjp;
 	private ThreadLocalContext threadLocalContext;
@@ -43,7 +43,7 @@ public class DefaultSourceProcesser implements SourceProcesser {
 
 	@Override
 	public Object doProcess() throws Throwable {
-		if (null == source && !isNull) {
+		if (!isExecuted) {
 			LOGGER.debug("Execute source method [{}]", getFullMethodName());
 			source = pjp.proceed();
 			Boolean isFinishSqlParse = (Boolean) threadLocalContext
@@ -54,7 +54,7 @@ public class DefaultSourceProcesser implements SourceProcesser {
 				throw new SqlParseException(
 						(Throwable) threadLocalContext.getAttribute(Context.THREAD_LOCAL_KEY_PARSING_THROWABLE));
 			}
-			if (null == source) {
+			if (null == source && isQuery()) {
 				// 如果源数据为null，赋值为包装类型NULL，以使缓存生效 
 				source = TypeWrapper.NULL;
 			}
@@ -76,4 +76,10 @@ public class DefaultSourceProcesser implements SourceProcesser {
 	public String getFullMethodName() {
 		return pjp.getSignature().toLongString();
 	}
+
+	@Override
+	public String toString() {
+		return getFullMethodName();
+	}
+	
 }

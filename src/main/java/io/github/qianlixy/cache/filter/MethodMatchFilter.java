@@ -26,8 +26,10 @@ public class MethodMatchFilter implements Filter {
 	public Object doFilter(SourceProcesser sourceProcesser, CacheProcesser cacheProcesser, Context context,
 			FilterChain chain) throws Throwable {
 		//TODO 待测试
-		if(pattern.matcher(sourceProcesser.getFullMethodName()).find()) {
-			chain.doFilter(sourceProcesser, cacheProcesser, context, chain);
+		if(null != pattern) {
+			if(pattern.matcher(sourceProcesser.getFullMethodName()).find()) {
+				chain.doFilter(sourceProcesser, cacheProcesser, context, chain);
+			}
 		}
 		return sourceProcesser.doProcess();
 	}

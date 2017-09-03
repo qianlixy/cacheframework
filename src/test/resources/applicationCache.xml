@@ -10,18 +10,18 @@
 	<aop:config>
 		<aop:aspect ref="cacheManager">
 			<!-- 切面建议拦截在DAO层，但是会有很多警告在日志中打印。也可以拦截Service层，但是注意更新业务逻辑并不会使缓存失效。 -->
-			<aop:around method="doCache" pointcut="execution(* com.qianlixy.framework.cache.business.dao.*.*(..))"/>
+			<aop:around method="doCache" pointcut="execution(* io.github.qianlixy.cache.business.dao.*.*(..))"/>
 		</aop:aspect>
 	</aop:config>
 		
-	<bean id="cacheManager" class="com.qianlixy.framework.cache.ConfigCacheManager" init-method="init">
+	<bean id="cacheManager" class="io.github.qianlixy.cache.ConfigCacheManager" init-method="init">
 		<property name="cacheFactory">
-			<bean class="com.qianlixy.framework.cache.impl.MemcachedCacheFactory">
+			<bean class="io.github.qianlixy.cache.impl.MemcachedCacheFactory">
 				<property name="client" ref="memcachedClient" />
 			</bean>
 		</property>
 		<property name="sqlParser">
-			<bean class="com.qianlixy.framework.cache.parse.DruidSqlParser">
+			<bean class="io.github.qianlixy.cache.parse.DruidSqlParser">
 				<property name="dataSource" ref="dataSource"></property>
 			</bean>
 		</property>

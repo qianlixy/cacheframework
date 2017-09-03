@@ -86,5 +86,10 @@ public class DefaultCacheProcesser implements CacheProcesser {
 		}
 		return cache;
 	}
+
+	@Override
+	public String toString() {
+		return sourceProcesser.getFullMethodName();
+	}
 	
 }
