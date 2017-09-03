@@ -15,6 +15,7 @@ public class MethodMatchFilter implements Filter {
 	@Override
 	public void init(AbstractConfig config) {
 		List<String> cacheMethods = config.getCacheMethods();
+		if(null == cacheMethods) return;
 		StringBuilder sb = new StringBuilder();
 		for (String string : cacheMethods) {
 			sb.append(string).append("|");
@@ -25,12 +26,12 @@ public class MethodMatchFilter implements Filter {
 	@Override
 	public Object doFilter(SourceProcesser sourceProcesser, CacheProcesser cacheProcesser, Context context,
 			FilterChain chain) throws Throwable {
-		//TODO 待测试
 		if(null != pattern) {
 			if(pattern.matcher(sourceProcesser.getFullMethodName()).find()) {
-				chain.doFilter(sourceProcesser, cacheProcesser, context, chain);
+				return chain.doFilter(sourceProcesser, cacheProcesser, context, chain);
 			}
 		}
+		LOGGER.debug("Cannot match method [{}]", sourceProcesser.getFullMethodName());
 		return sourceProcesser.doProcess();
 	}
 

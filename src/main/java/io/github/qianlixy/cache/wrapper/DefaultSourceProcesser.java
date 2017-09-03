@@ -58,6 +58,7 @@ public class DefaultSourceProcesser implements SourceProcesser {
 				// 如果源数据为null，赋值为包装类型NULL，以使缓存生效 
 				source = TypeWrapper.NULL;
 			}
+			isExecuted = true;
 		}
 		return source;
 	}
