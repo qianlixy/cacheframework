@@ -8,6 +8,7 @@ import io.github.qianlixy.cache.context.CacheMethodContext;
 import io.github.qianlixy.cache.context.SqlParseContext;
 import io.github.qianlixy.cache.context.ThreadLocalContext;
 import io.github.qianlixy.cache.exception.NonImplToStringException;
+import io.github.qianlixy.cache.exception.SqlParseException;
 import io.github.qianlixy.cache.filter.FilterChain;
 import io.github.qianlixy.cache.wrapper.DefaultCacheProcesser;
 import io.github.qianlixy.cache.wrapper.DefaultSourceProcesser;
@@ -66,7 +67,7 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 					new DefaultCacheProcesser(cacheMethodContext, sourceProcesser, 
 							cacheClientFactory.buildCollectionCacheClient(), defaultCacheTime), 
 					threadLocalContext, filterChain);
-		} catch (NonImplToStringException e) {
+		} catch (NonImplToStringException | SqlParseException e) {
 			LOGGER.warn("Cannot get cache by ： {}", e.getMessage());
 			return sourceProcesser.doProcess();
 		} catch (Throwable th) {
@@ -76,7 +77,7 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 		} finally {
 			if(LOGGER.isDebugEnabled()) {
 				long endTime = new Date().getTime();
-				LOGGER.debug("Intercepte method finished and cache method's total exec time is {} ms", 
+				LOGGER.debug("Intercept method finished and cache method's total exec time is {} ms", 
 						endTime - startTime);
 			}
 		}

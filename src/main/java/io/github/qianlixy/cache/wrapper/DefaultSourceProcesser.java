@@ -46,6 +46,7 @@ public class DefaultSourceProcesser implements SourceProcesser {
 		if (!isExecuted) {
 			LOGGER.debug("Execute source method [{}]", getFullMethodName());
 			source = pjp.proceed();
+			isExecuted = true;
 			Boolean isFinishSqlParse = (Boolean) threadLocalContext
 					.getAttribute(Context.THREAD_LOCAL_KEY_IS_FINISH_SQL_PARSE);
 			if (null == isFinishSqlParse)
@@ -58,19 +59,22 @@ public class DefaultSourceProcesser implements SourceProcesser {
 				// 如果源数据为null，赋值为包装类型NULL，以使缓存生效 
 				source = TypeWrapper.NULL;
 			}
-			isExecuted = true;
 		}
 		return source;
 	}
 
 	@Override
-	public boolean isAlter() {
-		return (boolean) threadLocalContext.getAttribute(Context.THREAD_LOCAL_KEY_IS_ALTER_METHOD);
+	public boolean isAlter() throws SqlParseException {
+		Object isAlter = threadLocalContext.getAttribute(Context.THREAD_LOCAL_KEY_IS_ALTER_METHOD);
+		if(null == isAlter) throw new SqlParseException("Cannot intercept sql");
+		return (boolean) isAlter;
 	}
 
 	@Override
-	public boolean isQuery() {
-		return (boolean) threadLocalContext.getAttribute(Context.THREAD_LOCAL_KEY_IS_QUERY_METHOD);
+	public boolean isQuery() throws SqlParseException {
+		Object isQuery = threadLocalContext.getAttribute(Context.THREAD_LOCAL_KEY_IS_QUERY_METHOD);
+		if(null == isQuery) throw new SqlParseException("Cannot intercept sql");
+		return (boolean) isQuery;
 	}
 
 	@Override

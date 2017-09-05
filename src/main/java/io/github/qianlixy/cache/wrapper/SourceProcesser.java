@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.qianlixy.cache.CacheManager;
+import io.github.qianlixy.cache.exception.SqlParseException;
 import io.github.qianlixy.cache.parse.SqlParser;
 
 /**
@@ -57,7 +58,7 @@ public interface SourceProcesser {
 	 * @return true - 源方法是修改方法，false - 源方法是查询方法
 	 * @see #isQuery()
 	 */
-	boolean isAlter();
+	boolean isAlter() throws SqlParseException;
 
 	/**
 	 * <p>源方法是否是对数据库进行select操作。</p>
@@ -65,6 +66,6 @@ public interface SourceProcesser {
 	 * @return true - 源方法是查询方法，false - 源方法是修改方法
 	 * @see #isAlter()
 	 */
-	boolean isQuery();
+	boolean isQuery() throws SqlParseException;
 	
 }
