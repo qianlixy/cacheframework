@@ -58,7 +58,7 @@ public class SqlParseContext extends ContextDecorator {
 		return cacheClient.consistentTime();
 	}
 	
-	public void SetIsFinishSqlParse(boolean isFinishSqlParse) {
+	public void setIsFinishSqlParse(boolean isFinishSqlParse) {
 		setAttribute(THREAD_LOCAL_KEY_IS_FINISH_SQL_PARSE, isFinishSqlParse);
 	}
 	

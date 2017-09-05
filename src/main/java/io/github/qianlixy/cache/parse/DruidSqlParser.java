@@ -74,9 +74,10 @@ public class DruidSqlParser extends FilterEventAdapter implements SqlParser {
 			}
 			context.setIsAlter(isAlter);
 			context.setIsQuery(!isAlter);
+			context.setIsFinishSqlParse(true);
 		} catch (Throwable th) {
 			LOGGER.error("Occur exception while parse sql", th);
-			context.SetIsFinishSqlParse(false);
+			context.setIsFinishSqlParse(false);
 			context.setThrowable(th);
 		}
 	}

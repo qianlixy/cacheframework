@@ -67,7 +67,7 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 							cacheClientFactory.buildCollectionCacheClient(), defaultCacheTime), 
 					threadLocalContext, filterChain);
 		} catch (NonImplToStringException e) {
-			LOGGER.warn("Cannot get cache by {}", e.getMessage());
+			LOGGER.warn("Cannot get cache by ： {}", e.getMessage());
 			return sourceProcesser.doProcess();
 		} catch (Throwable th) {
 			LOGGER.error("Occur exception while intercepte cache method [{}]", 

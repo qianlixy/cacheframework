@@ -30,9 +30,10 @@ public class MethodMatchFilter implements Filter {
 			if(pattern.matcher(sourceProcesser.getFullMethodName()).find()) {
 				return chain.doFilter(sourceProcesser, cacheProcesser, context, chain);
 			}
+			LOGGER.debug("Cannot match method [{}]", sourceProcesser.getFullMethodName());
+			return sourceProcesser.doProcess();
 		}
-		LOGGER.debug("Cannot match method [{}]", sourceProcesser.getFullMethodName());
-		return sourceProcesser.doProcess();
+		return chain.doFilter(sourceProcesser, cacheProcesser, context, chain);
 	}
 
 }
