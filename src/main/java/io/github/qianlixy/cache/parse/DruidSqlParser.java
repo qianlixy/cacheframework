@@ -49,6 +49,10 @@ public class DruidSqlParser extends FilterEventAdapter implements SqlParser {
 
 	private void handleSql(StatementProxy statement, String sql) {
 		try {
+			if(!context.isValid()) {
+				LOGGER.debug("The context is not valid so cannot intercept sql {}", sql);
+				return;
+			}
 			String dbType = getDbType(statement);
 			boolean isAlter = false;
 			LOGGER.debug("Intercepted sql : [{}]", sql);
