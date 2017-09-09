@@ -27,5 +27,15 @@ public abstract class ContextDecorator implements Context {
 	public void removeAttribute(Object key) {
 		context.removeAttribute(key);
 	}
+	
+	@Override
+	public void clear() {
+		context.clear();
+	}
+
+	@Override
+	public boolean isValid() {
+		return context.isValid();
+	}
 
 }

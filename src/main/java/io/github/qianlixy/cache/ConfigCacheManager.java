@@ -77,9 +77,11 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 		} finally {
 			if(LOGGER.isDebugEnabled()) {
 				long endTime = new Date().getTime();
-				LOGGER.debug("Intercept method finished and cache method's total exec time is {} ms", 
+				LOGGER.debug("Finish intercept method and cache method's total exec time is {} ms", 
 						endTime - startTime);
 			}
+			// 清空缓存方法
+			cacheMethodContext.clear();
 		}
 	}
 	

@@ -31,4 +31,14 @@ public class ThreadLocalContext implements Context {
 		return map;
 	}
 
+	@Override
+	public void clear() {
+		get().clear();
+	}
+
+	@Override
+	public boolean isValid() {
+		return null == threadLocal.get() ? false : true;
+	}
+
 }

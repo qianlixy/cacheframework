@@ -62,4 +62,15 @@ public interface Context {
 	 * @param key 标示key
 	 */
 	void removeAttribute(Object key);
+	
+	/**
+	 * 清空上下文数据
+	 */
+	void clear();
+	
+	/**
+	 * 上下文是否有效，无效时使用会发生异常
+	 * @return true - 有效，false - 无效
+	 */
+	boolean isValid();
 }
