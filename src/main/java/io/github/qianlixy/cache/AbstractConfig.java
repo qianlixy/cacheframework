@@ -34,6 +34,10 @@ public abstract class AbstractConfig {
 	 */
 	private List<String> cacheMethods;
 	
+	private List<String> sourceMethods;
+	
+	private Integer sourceMethodsLimit = 5;
+	
 	public void setCacheFactory(AbstractCacheClientFactory<?> cacheFactory) {
 		this.cacheClientFactory = cacheFactory;
 	}
@@ -65,4 +69,21 @@ public abstract class AbstractConfig {
 	public void setCacheMethods(List<String> cacheMethods) {
 		this.cacheMethods = cacheMethods;
 	}
+	
+	public List<String> getSourceMethods() {
+		return sourceMethods;
+	}
+
+	public void setSourceMethods(List<String> sourceMethods) {
+		this.sourceMethods = sourceMethods;
+	}
+
+	public Integer getSourceMethodsLimit() {
+		return sourceMethodsLimit;
+	}
+
+	public void setSourceMethodsLimit(Integer sourceMethodsLimit) {
+		this.sourceMethodsLimit = sourceMethodsLimit;
+	}
+	
 }
