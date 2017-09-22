@@ -20,7 +20,7 @@ public class ReturnSourceNotExistValidCacheFilter implements Filter {
 		if (null == cache) {
 			Object source = sourceProcesser.doProcess();
 			if(sourceProcesser.isAlter()) return source;
-			cacheProcesser.putCache(source, (int) context.getAttribute(MethodMatchFilter.CONTEXT_KEY_METHOD_CACHE_TIME));
+			cacheProcesser.putCache(source);
 			return source;
 		}
 		// 如果缓存为包装类NULL，说明缓存有效且源数据为null，直接返回null

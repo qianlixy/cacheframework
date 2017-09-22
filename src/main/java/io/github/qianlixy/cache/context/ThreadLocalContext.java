@@ -33,7 +33,8 @@ public class ThreadLocalContext implements Context {
 
 	@Override
 	public void clear() {
-		get().clear();
+//		get().clear();
+		threadLocal.remove();
 	}
 
 	@Override

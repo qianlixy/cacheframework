@@ -7,6 +7,10 @@ public class CacheOperationException extends RuntimeException {
 	public CacheOperationException() {
 		super();
 	}
+	
+	public CacheOperationException(String message) {
+		super(message);
+	}
 
 	public CacheOperationException(Throwable cause) {
 		super(cause);
