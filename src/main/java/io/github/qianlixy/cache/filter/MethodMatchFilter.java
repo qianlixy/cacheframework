@@ -11,16 +11,16 @@ public class MethodMatchFilter implements Filter {
 	
 	public static final String CONTEXT_KEY_METHOD_CACHE_TIME = "METHOD_CACHE_TIME";
 	
-	private CacheMethodMatcher methodMatcher = null;
+	private SimpleCacheMethodMatcher methodMatcher = null;
 	private int defaultCacheTime;
 	
 	@Override
 	public void init(AbstractConfig config) {
 		if(isArrayNotBlank(config.getCacheMethods()) && isArrayNotBlank(config.getSourceMethods())) {
-			methodMatcher = new CacheMethodMatcher(config.getCacheMethods(), 
+			methodMatcher = new SimpleCacheMethodMatcher(config.getCacheMethods(), 
 					config.getSourceMethods(), config.getSourceMethodsLimit());
 		} else if(!isArrayNotBlank(config.getSourceMethods())) {
-			methodMatcher = new CacheMethodMatcher(config.getCacheMethods());
+			methodMatcher = new SimpleCacheMethodMatcher(config.getCacheMethods());
 		}
 		defaultCacheTime = config.getDefaultCacheTime();
 	}

@@ -7,9 +7,11 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.github.qianlixy.cache.business.dao.UserDaoImpl;
+
 public class CacheMethodMatcherTest {
 
-	private CacheMethodMatcher matcher;
+	private MethodMatcher matcher = new SimpleMethodMatcher();
 	
 	@Before
 	public void before() {
@@ -21,13 +23,13 @@ public class CacheMethodMatcherTest {
 		List<String> methodPatterns = new ArrayList<>();
 		methodPatterns.add("io.github.qianlixy.dao.student");
 		methodPatterns.add("io.github.qianlixy.dao.teacher:60");
-		methodPatterns.add("io.github.qianlixy.dao.user");
-		matcher = new CacheMethodMatcher(methodPatterns, sourcePatterns, sourcePatternLimit);
+		methodPatterns.add("io.*\\.dao");
+		matcher.register(methodPatterns);
 	}
 	
 	@Test
 	public void testMatch() {
-		assertEquals(matcher.match("public int io.github.qianlixy.dao.user.findAll()"), 0);
+		assertEquals(matcher.doMatch(UserDaoImpl.class, "findAll"), true);
 	}
 	
 }

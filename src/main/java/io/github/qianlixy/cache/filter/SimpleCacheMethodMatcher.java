@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * @author qianli_xy@163.com
  * @since 1.0
  */
-public class CacheMethodMatcher {
+public class SimpleCacheMethodMatcher {
 		
 		private Pattern methodPattern;
 		private Map<Integer, Integer> methodCacheTime = new HashMap<>();
@@ -20,11 +20,11 @@ public class CacheMethodMatcher {
 		private Map<Integer, Integer> sourceMethodCacheTime = new HashMap<>();
 		private int sourcePatternLimit = 5;
 		
-		public CacheMethodMatcher(List<String> methodPatterns) {
+		public SimpleCacheMethodMatcher(List<String> methodPatterns) {
 			methodPattern = register(methodPatterns, methodCacheTime);
 		}
 		
-		public CacheMethodMatcher(List<String> methodPatterns, 
+		public SimpleCacheMethodMatcher(List<String> methodPatterns, 
 				List<String> sourcePatterns, int sourcePatternLimit) {
 			this(methodPatterns);
 			sourceMethodPattern = register(sourcePatterns, sourceMethodCacheTime);
