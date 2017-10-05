@@ -7,6 +7,8 @@ import io.github.qianlixy.cache.CollectionCacheClient;
 
 public abstract class AbstractCacheClientFactory<T> {
 	
+	private static AbstractCacheClientFactory<?> currentFactory;
+	
 	protected T client;
 
 	public void setClient(T client) {
@@ -16,5 +18,13 @@ public abstract class AbstractCacheClientFactory<T> {
 	public abstract CacheClient buildCacheClient() throws IOException;
 	
 	public abstract CollectionCacheClient buildCollectionCacheClient() throws IOException;
+	
+	public static AbstractCacheClientFactory<?> getCurrentFactory() {
+		return currentFactory;
+	}
+
+	public static void setCurrentFactory(AbstractCacheClientFactory<?> currentFactory) {
+		AbstractCacheClientFactory.currentFactory = currentFactory;
+	}
 	
 }

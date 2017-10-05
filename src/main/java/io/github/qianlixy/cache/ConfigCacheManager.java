@@ -7,9 +7,14 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import io.github.qianlixy.cache.context.CacheMethodContext;
 import io.github.qianlixy.cache.context.SqlParseContext;
 import io.github.qianlixy.cache.context.ThreadLocalContext;
+import io.github.qianlixy.cache.context_new.DefaultMethodContext;
+import io.github.qianlixy.cache.context_new.DistributedContext;
+import io.github.qianlixy.cache.context_new.MethodContext;
+import io.github.qianlixy.cache.context_new.ThreadContext;
 import io.github.qianlixy.cache.exception.NonImplToStringException;
 import io.github.qianlixy.cache.exception.SqlParseException;
 import io.github.qianlixy.cache.filter.FilterChain;
+import io.github.qianlixy.cache.impl.AbstractCacheClientFactory;
 import io.github.qianlixy.cache.wrapper.DefaultCacheProcesser;
 import io.github.qianlixy.cache.wrapper.DefaultSourceProcesser;
 import io.github.qianlixy.cache.wrapper.SourceProcesser;
@@ -27,13 +32,17 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 	private ThreadLocalContext threadLocalContext;
 	private CacheMethodContext cacheMethodContext;
 	private FilterChain filterChain;
+	private MethodContext methodContext;
 	
 	@Override
 	public void init() throws Exception {
 		// 初始化缓存客户端
 		CollectionCacheClient collectionCacheClient = null;
+		CacheClient cacheClient = null;
 		try {
 			collectionCacheClient = cacheClientFactory.buildCollectionCacheClient();
+			cacheClient = cacheClientFactory.buildCacheClient();
+			AbstractCacheClientFactory.setCurrentFactory(cacheClientFactory);
 		} catch (Exception e) {
 			LOGGER.error("Cache manager init fail while build cache client", e);
 			throw e;
@@ -43,8 +52,10 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 		threadLocalContext = new ThreadLocalContext();
 		cacheMethodContext = new CacheMethodContext(threadLocalContext);
 		
+		methodContext = new DefaultMethodContext(new ThreadContext(), new DistributedContext(cacheClient));
+		
 		// 初始化Sql解析器
-		sqlParser.setSqlParseContext(new SqlParseContext(cacheMethodContext, collectionCacheClient));
+		sqlParser.setMethodContext(methodContext);
 		
 		// 初始化拦截器链
 		filterChain = new FilterChain();
@@ -61,7 +72,8 @@ public class ConfigCacheManager extends AbstractConfig implements CacheManager {
 		SourceProcesser sourceProcesser = new DefaultSourceProcesser(joinPoint, threadLocalContext);
 		try {
 			// 注册缓存方法
-			cacheMethodContext.registerCacheMethod(joinPoint);
+//			cacheMethodContext.registerCacheMethod(joinPoint);
+			methodContext.register(joinPoint);
 			// 拦截器依次拦截
 			return filterChain.doFilter(sourceProcesser, 
 					new DefaultCacheProcesser(cacheMethodContext, sourceProcesser, 

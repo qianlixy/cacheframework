@@ -3,8 +3,10 @@ package io.github.qianlixy.cache.parse;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -19,11 +21,12 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
 import com.alibaba.druid.stat.TableStat.Name;
 
-import io.github.qianlixy.cache.context.SqlParseContext;
+import io.github.qianlixy.cache.context_new.MethodContext;
+import io.github.qianlixy.cache.impl.AbstractCacheClientFactory;
 
 public class DruidSqlParser extends FilterEventAdapter implements SqlParser {
 	
-	private SqlParseContext context;
+	private MethodContext context;
 
 	@Override
 	protected void statementExecuteUpdateAfter(StatementProxy statement, String sql, int updateCount) {
@@ -49,15 +52,12 @@ public class DruidSqlParser extends FilterEventAdapter implements SqlParser {
 
 	private void handleSql(StatementProxy statement, String sql) {
 		try {
-			if(!context.isValid()) {
-				LOGGER.debug("The context is not valid so cannot intercept sql {}", sql);
-				return;
-			}
 			String dbType = getDbType(statement);
 			boolean isAlter = false;
 			LOGGER.debug("Intercepted sql : [{}]", sql);
 			//context.addCacheMethodSql(sql);
 			List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, dbType.toLowerCase());
+			Set<String> tables = new HashSet<>();
 			for (SQLStatement sqlStatement : stmtList) {
 				MySqlSchemaStatVisitor visitor = new MySqlSchemaStatVisitor();
 				sqlStatement.accept(visitor);
@@ -66,23 +66,25 @@ public class DruidSqlParser extends FilterEventAdapter implements SqlParser {
 				for (Name name : tableMap.keySet()) {
 					String tableName = name.getName();
 //					LOGGER.debug("Intercepted table : {}", tableName);
-					context.addCacheMethodTable(tableName.toLowerCase());
+//					context.addCacheMethodTable(tableName.toLowerCase());
+					tables.add(tableName.toLowerCase());
 					TableStat tableStat = tableMap.get(name);
 					if (tableStat.getInsertCount() > 0
 							|| tableStat.getUpdateCount() > 0
 							|| tableStat.getDeleteCount() > 0) {
-						context.setTableLastAlterTime(tableName.toLowerCase(), context.getConsistentTime());
+						context.setTableLastAlterTime(tableName.toLowerCase(), 
+								AbstractCacheClientFactory.getCurrentFactory()
+								.buildCacheClient().consistentTime());
 						if (!isAlter) isAlter = true;
 					}
 				}
 			}
-			context.setIsAlter(isAlter);
-			context.setIsQuery(!isAlter);
-			context.setIsFinishSqlParse(true);
+			context.setQuery(!isAlter);
+//			context.setIsFinishSqlParse(true);
 		} catch (Throwable th) {
 			LOGGER.error("Occur exception while parse sql", th);
-			context.setIsFinishSqlParse(false);
-			context.setThrowable(th);
+//			context.setIsFinishSqlParse(false);
+//			context.setThrowable(th);
 		}
 	}
 	
@@ -110,7 +112,7 @@ public class DruidSqlParser extends FilterEventAdapter implements SqlParser {
 	}
 
 	@Override
-	public void setSqlParseContext(SqlParseContext context) {
+	public void setMethodContext(MethodContext context) {
 		this.context = context;
 	}
 	

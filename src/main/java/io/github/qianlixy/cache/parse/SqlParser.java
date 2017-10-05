@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.qianlixy.cache.context.SqlParseContext;
+import io.github.qianlixy.cache.context_new.MethodContext;
 
 /**
  * <p>SQL解析器 </p>
@@ -31,6 +32,6 @@ public interface SqlParser {
 	 * 设置SQL解析上下文对象，用于存放SQL解析结果
 	 * @param context SQL解析上下文
 	 */
-	void setSqlParseContext(SqlParseContext context);
+	void setMethodContext(MethodContext context);
 	
 }
