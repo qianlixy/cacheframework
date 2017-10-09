@@ -1,6 +1,6 @@
 package io.github.qianlixy.cache.impl;
 
-import io.github.qianlixy.cache.CacheClient;
+import io.github.qianlixy.cache.CacheAdapter;
 import io.github.qianlixy.cache.CollectionCacheClient;
 import redis.clients.jedis.Jedis;
 
@@ -11,10 +11,10 @@ import redis.clients.jedis.Jedis;
  * @author qianli_xy@163.com
  * @since 1.7
  */
-public class RedisCacheFactory extends AbstractCacheClientFactory<Jedis> {
+public class RedisCacheAdapterFactory extends AbstractCacheAdapterFactory<Jedis> {
 
 	@Override
-	public CacheClient buildCacheClient() {
+	public CacheAdapter buildCacheClient() {
 		return null;
 	}
 

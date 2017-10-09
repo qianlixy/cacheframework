@@ -14,21 +14,12 @@
 		</aop:aspect>
 	</aop:config>
 		
-	<bean id="cacheManager" class="io.github.qianlixy.cache.ConfigCacheManager" init-method="init">
-		<property name="cacheFactory">
-			<bean class="io.github.qianlixy.cache.impl.MemcachedCacheFactory">
-				<property name="client" ref="memcachedClient" />
-			</bean>
-		</property>
-		<property name="sqlParser">
-			<bean class="io.github.qianlixy.cache.parse.DruidSqlParser">
+	<bean id="cacheManager" class="io.github.qianlixy.cache.DefaultCacheManger" init-method="init">
+		<property name="cacheConfig">
+			<bean class="io.github.qianlixy.cache.CacheConfig">
 				<property name="dataSource" ref="dataSource"></property>
+				<property name="cacheClient" ref="memcachedClient"></property>
 			</bean>
-		</property>
-		<property name="cacheMethods">
-			<array>
-				<value>io\.github\.qianlixy.*\.findAll</value>
-			</array>
 		</property>
 	</bean>
 	

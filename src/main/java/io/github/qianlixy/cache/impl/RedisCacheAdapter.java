@@ -2,7 +2,7 @@ package io.github.qianlixy.cache.impl;
 
 import java.util.List;
 
-import io.github.qianlixy.cache.CacheClient;
+import io.github.qianlixy.cache.CacheAdapter;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
 import redis.clients.jedis.Jedis;
 
@@ -12,7 +12,7 @@ import redis.clients.jedis.Jedis;
  * @author qianli_xy@163.com
  * @since 1.7
  */
-public class RedisCacheAdapter implements CacheClient {
+public class RedisCacheAdapter implements CacheAdapter {
 	
 	protected Jedis jedis;
 

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface CollectionCacheClient extends CacheClient {
+public interface CollectionCacheClient extends CacheAdapter {
 
 	Map<Object, Object> getMap(String key);
 	

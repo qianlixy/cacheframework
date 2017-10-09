@@ -4,8 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.qianlixy.cache.AbstractConfig;
-import io.github.qianlixy.cache.CacheClient;
+import io.github.qianlixy.cache.CacheAdapter;
 import io.github.qianlixy.cache.CacheManager;
+import io.github.qianlixy.cache.exception.CacheOperationException;
+import io.github.qianlixy.cache.exception.ConsistentTimeException;
 
 /**
  * <p>定义对缓存的处理包装接口</p>
@@ -32,23 +34,21 @@ public interface CacheProcesser {
 	/**
 	 * 设置源方法的缓存。缓存时间使用默认缓存时间{@link AbstractConfig#defaultCacheTime}
 	 * @param cache 源方法的缓存对象
+	 * @throws ConsistentTimeException 
+	 * @throws CacheOperationException 
 	 * @see #putCache(Object, int)
 	 * @see AbstractConfig#defaultCacheTime
 	 */
-	void putCache(Object cache);
+	void putCache(Object cache) throws CacheOperationException, ConsistentTimeException;
 	
 	/**
 	 * 设置源方法的缓存
 	 * @param cache 源方法的缓存对象
 	 * @param time 缓存有效时间
+	 * @throws ConsistentTimeException 
+	 * @throws CacheOperationException 
 	 * @see #putCache(Object)
 	 */
-	void putCache(Object cache, int time);
+	void putCache(Object cache, int time) throws CacheOperationException, ConsistentTimeException;
 	
-	/**
-	 * 获取缓存客户端
-	 * @return 缓存客户端对象
-	 */
-	CacheClient getCacheClient();
-
 }

@@ -2,14 +2,14 @@ package io.github.qianlixy.cache.impl;
 
 import java.io.IOException;
 
-import io.github.qianlixy.cache.CacheClient;
+import io.github.qianlixy.cache.CacheAdapter;
 import io.github.qianlixy.cache.CollectionCacheClient;
 import net.rubyeye.xmemcached.MemcachedClient;
 
-public class MemcachedCacheFactory extends AbstractCacheClientFactory<MemcachedClient> {
+public class MemcachedCacheAdapterFactory extends AbstractCacheAdapterFactory<MemcachedClient> {
 
 	@Override
-	public CacheClient buildCacheClient() throws IOException {
+	public CacheAdapter buildCacheClient() throws IOException {
 		return new MemcachedAdapter(client);
 	}
 

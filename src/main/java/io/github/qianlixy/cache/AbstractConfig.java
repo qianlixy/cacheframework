@@ -2,8 +2,8 @@ package io.github.qianlixy.cache;
 
 import java.util.List;
 
-import io.github.qianlixy.cache.impl.AbstractCacheClientFactory;
-import io.github.qianlixy.cache.parse.SqlParser;
+import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
+import io.github.qianlixy.cache.parse.SQLParser;
 
 /**
  * 缓存管理配置信息
@@ -13,10 +13,10 @@ import io.github.qianlixy.cache.parse.SqlParser;
 public abstract class AbstractConfig {
 
 	/** 缓存客户端抽象工厂类，用于构建缓存客户端 */
-	protected AbstractCacheClientFactory<?> cacheClientFactory;
+	protected AbstractCacheAdapterFactory<?> cacheClientFactory;
 	
 	/** SQL解析器 */
-	protected SqlParser sqlParser;
+	protected SQLParser sqlParser;
 	
 	/** 全局默认缓存时间，默认为1小时 */
 	protected int defaultCacheTime = 3600;
@@ -38,11 +38,11 @@ public abstract class AbstractConfig {
 	
 	private Integer sourceMethodsLimit = 5;
 	
-	public void setCacheFactory(AbstractCacheClientFactory<?> cacheFactory) {
+	public void setCacheFactory(AbstractCacheAdapterFactory<?> cacheFactory) {
 		this.cacheClientFactory = cacheFactory;
 	}
 
-	public void setSqlParser(SqlParser sqlParser) {
+	public void setSqlParser(SQLParser sqlParser) {
 		this.sqlParser = sqlParser;
 	}
 

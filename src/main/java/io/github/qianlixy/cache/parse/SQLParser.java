@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.qianlixy.cache.context.SqlParseContext;
+import io.github.qianlixy.cache.context_new.CacheContext;
 
 /**
  * <p>SQL解析器 </p>
@@ -15,10 +16,10 @@ import io.github.qianlixy.cache.context.SqlParseContext;
  * @author qianli_xy@163.com
  * @since 1.7
  */
-public interface SqlParser {
+public interface SQLParser {
 	
 	/** 日志打印。子类使用该日志对象打印日志，便于日志打印管理 */
-	Logger LOGGER = LoggerFactory.getLogger(SqlParser.class);
+	Logger LOGGER = LoggerFactory.getLogger(SQLParser.class);
 	
 	/**
 	 * 设置数据库连接池
@@ -28,9 +29,10 @@ public interface SqlParser {
 	void setDataSource(DataSource dataSource) throws ClassCastException;
 	
 	/**
-	 * 设置SQL解析上下文对象，用于存放SQL解析结果
-	 * @param context SQL解析上下文
+	 * <p>赋值缓存上下文对象，用于存放SQL解析结果</p>
+	 * <p>自定义SQLParser时，不需要赋值上下文信息，由CacheManager初始化时赋值</p>
+	 * @param context 缓存上下文对象
 	 */
-	void setSqlParseContext(SqlParseContext context);
+	void setCacheContext(CacheContext context);
 	
 }

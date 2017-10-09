@@ -64,7 +64,7 @@ public class FilterChain implements Filter {
 		// 注册过滤器
 		filters = new ArrayList<>();
 //		filters.add(new MethodMatchFilter());
-		filters.add(new ReturnSourceNotExistValidCacheFilter());
+//		filters.add(new ReturnSourceNotExistValidCacheFilter());
 		
 		for (Filter filter : filters) {
 			filter.init(config);

@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import io.github.qianlixy.cache.CacheClient;
+import io.github.qianlixy.cache.CacheAdapter;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 
-public class MemcachedAdapter implements CacheClient {
+public class MemcachedAdapter implements CacheAdapter {
 	
 	private static final String KEY_SYSTEM_TIME_ATOMICITY = "SYSTEM_TIME_ATOMICITY";
 	

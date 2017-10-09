@@ -11,12 +11,12 @@ import io.github.qianlixy.cache.exception.ConsistentTimeException;
  * @author qianli_xy@163.com
  * @since 1.7
  */
-public interface CacheClient {
+public interface CacheAdapter {
 	
 	/**
 	 * 日志打印。子类使用该日志对象打印日志，便于日志打印管理
 	 */
-	Logger LOGGER = LoggerFactory.getLogger(CacheClient.class);
+	Logger LOGGER = LoggerFactory.getLogger(CacheAdapter.class);
 
 	/**
 	 * 设置缓存（无时间限制，最长时间根据不同缓存客户端不同）

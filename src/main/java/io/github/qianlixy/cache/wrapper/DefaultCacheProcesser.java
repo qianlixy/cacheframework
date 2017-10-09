@@ -1,95 +1,75 @@
 package io.github.qianlixy.cache.wrapper;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.github.qianlixy.cache.CacheClient;
-import io.github.qianlixy.cache.CollectionCacheClient;
-import io.github.qianlixy.cache.context.CacheMethodContext;
-import io.github.qianlixy.cache.context.Context;
+import io.github.qianlixy.cache.CacheAdapter;
+import io.github.qianlixy.cache.context_new.CacheClientConsistentTime;
+import io.github.qianlixy.cache.context_new.CacheContext;
 import io.github.qianlixy.cache.exception.CacheOperationException;
+import io.github.qianlixy.cache.exception.ConsistentTimeException;
 
 public class DefaultCacheProcesser implements CacheProcesser {
 	
-	private CacheMethodContext cacheMethodContext;
-	private SourceProcesser sourceProcesser;
-	private CollectionCacheClient collectionCacheClient;
+	private CacheContext cacheContext;
+	private CacheAdapter cacheAdapter;
 	private int defaultCacheTime;
 	
-	public DefaultCacheProcesser(CacheMethodContext cacheMethodContext, SourceProcesser sourceProcesser,
-			CollectionCacheClient collectionCacheClient, int defaultCacheTime) {
-		this.cacheMethodContext = cacheMethodContext;
-		this.sourceProcesser = sourceProcesser;
-		this.collectionCacheClient = collectionCacheClient;
+	public DefaultCacheProcesser(CacheContext cacheContext, CacheAdapter cacheAdapter,
+			int defaultCacheTime) {
+		this.cacheContext = cacheContext;
+		this.cacheAdapter = cacheAdapter;
 		this.defaultCacheTime = defaultCacheTime;
 	}
 
 	@Override
-	public void putCache(Object source) {
+	public void putCache(Object source) throws CacheOperationException, ConsistentTimeException {
 		putCache(source, defaultCacheTime);
 	}
 	
 	@Override
-	public void putCache(Object source, int time) throws CacheOperationException {
-		String dynamicUniqueMark = cacheMethodContext.getCacheMethodDynamicUniqueMark();
-		if(sourceProcesser.isAlter()) return;
-		if(sourceProcesser.isQuery()) {
-			collectionCacheClient.set(dynamicUniqueMark, source, time);
-			try {
-				collectionCacheClient.putMap(Context.CACHE_KEY_METHOD_LAST_QUERY_TIME_MAP, 
-						dynamicUniqueMark, collectionCacheClient.consistentTime());
-			} catch (Exception e) {
-				throw new CacheOperationException(e);
-			}
-		}
-		collectionCacheClient.set(dynamicUniqueMark, source, time);
+	public void putCache(Object source, int time) throws CacheOperationException, ConsistentTimeException {
+		if(null == source || !cacheContext.isQuery()) return;
+		cacheAdapter.set(cacheContext.getDynamicUniqueMark(), source, time);
+		cacheContext.setLastQueryTime(CacheClientConsistentTime.newInstance());
 	}
 	
-	@Override
-	public CacheClient getCacheClient() {
-		return collectionCacheClient;
-	}
-	
-	@SuppressWarnings("unchecked")
 	@Override
 	public Object getCache() {
-		String cacheKey = cacheMethodContext.getCacheMethodDynamicUniqueMark();
-		String staticKey = cacheMethodContext.getCacheMethodStaticUniqueMark();
-		Object cache = collectionCacheClient.get(cacheKey);
+		//获取缓存
+		Object cache = cacheAdapter.get(cacheContext.getDynamicUniqueMark());
+		//获取缓存为空直接返回
 		if (null == cache) {
 			return null;
 		}
+		
+		//获取源方法关联表的修改时间
 		Set<Long> lastAlterTime = new HashSet<>();
-		Set<String> methodTalbeMap = (Set<String>) collectionCacheClient
-				.getMap(Context.CACHE_KEY_METHOD_TABLE_MAP, staticKey);
+		Collection<String> methodTalbeMap = cacheContext.getTables();
 		for (String table : methodTalbeMap) {
-			Long time = (Long) collectionCacheClient
-					.getMap(Context.CACHE_KEY_TABLE_LAST_ALERT_TIME_MAP, table);
-			if(null != time) {
-				lastAlterTime.add(time);
-			}
+			long time = cacheContext.getTableLastAlterTime(table);
+			if(time > 0) lastAlterTime.add(time);
 		}
-		if (null == lastAlterTime || lastAlterTime.size() <= 0) {
-			return cache;
-		}
-		Long lastQueryTime = (Long) collectionCacheClient.getMap(
-				Context.CACHE_KEY_METHOD_LAST_QUERY_TIME_MAP, cacheKey);
-		if (null == lastQueryTime) {
-			LOGGER.warn("Cache is exist, but times of query is null, return database data");
-			return null;
-		}
+		//源方法关联的表一直没有修改过，直接返回缓存
+		if (lastAlterTime.size() == 0) return cache;
+		
+		//判断缓存是否超时失效
+		long lastQueryTime = cacheContext.getLastQueryTime();
 		for (Long alterTime : lastAlterTime) {
 			if(alterTime > lastQueryTime) {
-				LOGGER.debug("Cache exist but cache time is out of date");
+				LOGGER.debug("Cache is out of date on [{}]", cacheContext.getStaticUniqueMark());
 				return null;
 			}
 		}
+		
+		//缓存存在，没有超时失效，返回有效缓存
 		return cache;
 	}
 
 	@Override
 	public String toString() {
-		return sourceProcesser.getFullMethodName();
+		return cacheContext.getStaticUniqueMark();
 	}
 	
 }
