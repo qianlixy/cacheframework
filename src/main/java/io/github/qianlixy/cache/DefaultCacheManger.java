@@ -2,10 +2,11 @@ package io.github.qianlixy.cache;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 
-import io.github.qianlixy.cache.context_new.CacheContext;
-import io.github.qianlixy.cache.context_new.DefaultCacheContext;
+import io.github.qianlixy.cache.context.CacheContext;
+import io.github.qianlixy.cache.context.DefaultCacheContext;
 import io.github.qianlixy.cache.exception.CacheIsNullException;
 import io.github.qianlixy.cache.exception.InitCacheManagerException;
+import io.github.qianlixy.cache.exception.NonImplToStringException;
 import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
 import io.github.qianlixy.cache.parse.DruidSQLParser;
 import io.github.qianlixy.cache.wrapper.CacheProcesser;
@@ -57,7 +58,12 @@ public class DefaultCacheManger implements CacheManager {
 	@Override
 	public Object doCache(ProceedingJoinPoint joinPoint) throws Throwable {
 		//注册拦截源方法
-		cacheContext.register(joinPoint);
+		try {
+			cacheContext.register(joinPoint);
+		} catch (NonImplToStringException e) {
+			LOGGER.warn(e.getMessage());
+			return joinPoint.proceed();
+		}
 		//生成源方法包装类
 		SourceProcesser sourceProcesser = new DefaultSourceProcesser(joinPoint);
 		//生成源方法缓存操作包装类

@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.github.qianlixy.cache.CacheAdapter;
-import io.github.qianlixy.cache.context_new.CacheClientConsistentTime;
-import io.github.qianlixy.cache.context_new.CacheContext;
+import io.github.qianlixy.cache.context.CacheClientConsistentTime;
+import io.github.qianlixy.cache.context.CacheContext;
 import io.github.qianlixy.cache.exception.CacheOperationException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
 

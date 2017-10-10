@@ -3,9 +3,7 @@ package io.github.qianlixy.cache.impl;
 import java.io.IOException;
 
 import io.github.qianlixy.cache.CacheAdapter;
-import io.github.qianlixy.cache.CollectionCacheClient;
 import net.rubyeye.xmemcached.MemcachedClient;
-import redis.clients.jedis.Jedis;
 
 /**
  * 缓存适配器抽象工厂
@@ -24,17 +22,10 @@ public abstract class AbstractCacheAdapterFactory<T> {
 	
 	public abstract CacheAdapter buildCacheClient() throws IOException;
 	
-	public abstract CollectionCacheClient buildCollectionCacheClient() throws IOException;
-	
 	public static AbstractCacheAdapterFactory<?> buildFactory(Object cacheClient) {
 		if(cacheClient instanceof MemcachedClient) {
 			MemcachedCacheAdapterFactory factory = new MemcachedCacheAdapterFactory();
 			factory.setClient((MemcachedClient) cacheClient);
-			return factory;
-		}
-		else if(cacheClient instanceof Jedis) {
-			RedisCacheAdapterFactory factory = new RedisCacheAdapterFactory();
-			factory.setClient((Jedis) cacheClient);
 			return factory;
 		}
 		return null;

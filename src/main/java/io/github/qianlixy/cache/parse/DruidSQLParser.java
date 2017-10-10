@@ -19,8 +19,8 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
 import com.alibaba.druid.stat.TableStat.Name;
 
-import io.github.qianlixy.cache.context_new.CacheClientConsistentTime;
-import io.github.qianlixy.cache.context_new.CacheContext;
+import io.github.qianlixy.cache.context.CacheClientConsistentTime;
+import io.github.qianlixy.cache.context.CacheContext;
 
 public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
 	
