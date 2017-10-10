@@ -47,6 +47,9 @@ public class DefaultCacheProcesser implements CacheProcesser {
 		//获取源方法关联表的修改时间
 		Set<Long> lastAlterTime = new HashSet<>();
 		Collection<String> methodTalbeMap = cacheContext.getTables();
+		//源方法关联的表一直没有修改过，直接返回缓存
+		if(null == methodTalbeMap) return cache;
+		
 		for (String table : methodTalbeMap) {
 			long time = cacheContext.getTableLastAlterTime(table);
 			if(time > 0) lastAlterTime.add(time);

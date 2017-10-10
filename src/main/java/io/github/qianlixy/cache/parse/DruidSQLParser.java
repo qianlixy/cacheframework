@@ -74,6 +74,7 @@ public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
 					}
 				}
 			}
+			context.setTables(tables);
 			context.setQuery(!isAlter);
 		} catch (Throwable th) {
 			LOGGER.error("Occur exception while parse sql. exception message : {}", th.getMessage());
