@@ -4,6 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 import io.github.qianlixy.cache.context_new.CacheContext;
 import io.github.qianlixy.cache.context_new.DefaultCacheContext;
+import io.github.qianlixy.cache.exception.CacheIsNullException;
 import io.github.qianlixy.cache.exception.InitCacheManagerException;
 import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
 import io.github.qianlixy.cache.parse.DruidSQLParser;
@@ -58,7 +59,7 @@ public class DefaultCacheManger implements CacheManager {
 		//注册拦截源方法
 		cacheContext.register(joinPoint);
 		//生成源方法包装类
-		SourceProcesser sourceProcesser = new DefaultSourceProcesser(joinPoint, cacheContext);
+		SourceProcesser sourceProcesser = new DefaultSourceProcesser(joinPoint);
 		//生成源方法缓存操作包装类
 		CacheProcesser cacheProcesser = new DefaultCacheProcesser(cacheContext,
 				CacheConfig.getCacheClientFactory().buildCacheClient(),
@@ -66,22 +67,28 @@ public class DefaultCacheManger implements CacheManager {
 		boolean isQuery = false;
 		try {
 			isQuery = cacheContext.isQuery();
-		} catch(NullPointerException e) {
-			Object source = sourceProcesser.doProcess();
-			cacheProcesser.putCache(source);
-			return source;
+		} catch(CacheIsNullException e) {
+			return execSourceMethodAndSetCache(sourceProcesser, cacheProcesser);
 		}
 		if(isQuery) {
 			Object cache = cacheProcesser.getCache();
 			if(null == cache) {
-				Object source = sourceProcesser.doProcess();
-				cacheProcesser.putCache(source);
-				return source;
+				return execSourceMethodAndSetCache(sourceProcesser, cacheProcesser);
 			}
 			LOGGER.debug("Use cache client data on [{}]", joinPoint.getSignature().toLongString());
 			return cache;
 		}
-		return sourceProcesser.doProcess();
+		return execSourceMethodAndSetCache(sourceProcesser, cacheProcesser);
+	}
+	
+	private Object execSourceMethodAndSetCache(SourceProcesser sourceProcesser, CacheProcesser cacheProcesser) throws Throwable {
+		Object source = sourceProcesser.doProcess();
+		try {
+			cacheProcesser.putCache(source);
+		} catch (CacheIsNullException e) {
+			LOGGER.warn("Exist null cache data when set cache, so cannot set cache on [{}]", sourceProcesser.getFullMethodName());
+		}
+		return source;
 	}
 
 }

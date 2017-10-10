@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.qianlixy.cache.CacheManager;
-import io.github.qianlixy.cache.exception.SQLParseException;
-import io.github.qianlixy.cache.parse.SQLParser;
 
 /**
  * <p>定义拦截到需要被缓存源方法的基本信息和操作的包装接口</p>

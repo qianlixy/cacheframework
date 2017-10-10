@@ -2,8 +2,6 @@ package io.github.qianlixy.cache.wrapper;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 
-import io.github.qianlixy.cache.context_new.CacheContext;
-
 /**
  * <p>源方法包装类的默认实现</p>
  * <p>每拦截到源方法需要生成一个新的实例，否则存在线程安全问题</p>
@@ -15,12 +13,9 @@ public class DefaultSourceProcesser implements SourceProcesser {
 	private ThreadLocal<Object> executResult = new ThreadLocal<>();
 
 	private ProceedingJoinPoint joinPoint;
-	private CacheContext cacheContext;
 	
-	public DefaultSourceProcesser(ProceedingJoinPoint joinPoint, 
-			CacheContext cacheContext) {
+	public DefaultSourceProcesser(ProceedingJoinPoint joinPoint) {
 		this.joinPoint = joinPoint;
-		this.cacheContext = cacheContext;
 	}
 
 	@Override
@@ -42,8 +37,7 @@ public class DefaultSourceProcesser implements SourceProcesser {
 	public Object doProcess() throws Throwable {
 		if(null == executResult.get()) {
 			LOGGER.debug("Start execute source method [{}]", getFullMethodName());
-			Object source = joinPoint.proceed();
-			executResult.set(null == source && cacheContext.isQuery() ? null : source);
+			executResult.set(joinPoint.proceed());
 		}
 		return executResult.get();
 	}

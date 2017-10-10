@@ -52,7 +52,7 @@ public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
 		try {
 			String dbType = getDbType(statement);
 			boolean isAlter = false;
-			LOGGER.debug("Intercepted sql : [{}]", sql);
+			LOGGER.debug("Intercepted SQL : [{}]", sql);
 			//context.addCacheMethodSql(sql);
 			List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, dbType.toLowerCase());
 			List<String> tables = new ArrayList<>();
@@ -77,7 +77,7 @@ public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
 			context.setTables(tables);
 			context.setQuery(!isAlter);
 		} catch (Throwable th) {
-			LOGGER.error("Occur exception while parse sql. exception message : {}", th.getMessage());
+			LOGGER.error("Occur exception while parse SQL. exception message : {}", th.getMessage());
 		}
 	}
 	

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import io.github.qianlixy.cache.CacheAdapter;
+import io.github.qianlixy.cache.exception.CacheIsNullException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
 import io.github.qianlixy.cache.utils.UniqueMethodMarkUtil;
 
@@ -59,8 +60,10 @@ public class DefaultCacheContext implements CacheContext {
 	@Override
 	public boolean isQuery() {
 		Map<String, Boolean> isQueryMap = (Map<String, Boolean>) cacheContext.get(IS_QUERY_METHOD);
-		if(null == isQueryMap) return false;
-		return isQueryMap.get(get(DYNAMIC_UNIQUE_MARK));
+		if(null == isQueryMap) throw new CacheIsNullException();
+		Boolean isQuery = isQueryMap.get(get(DYNAMIC_UNIQUE_MARK));
+		if(null == isQuery) throw new CacheIsNullException();
+		return isQuery;
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.qianlixy.cache.AbstractConfig;
-import io.github.qianlixy.cache.CacheAdapter;
 import io.github.qianlixy.cache.CacheManager;
 import io.github.qianlixy.cache.exception.CacheOperationException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
