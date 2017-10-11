@@ -8,6 +8,7 @@ import io.github.qianlixy.cache.CacheAdapter;
 import io.github.qianlixy.cache.context.CacheClientConsistentTime;
 import io.github.qianlixy.cache.context.CacheContext;
 import io.github.qianlixy.cache.exception.CacheOperationException;
+import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
 
 public class DefaultCacheProcesser implements CacheProcesser {
@@ -36,13 +37,9 @@ public class DefaultCacheProcesser implements CacheProcesser {
 	}
 	
 	@Override
-	public Object getCache() {
+	public Object getCache() throws CacheOutOfDateException {
 		//获取缓存
 		Object cache = cacheAdapter.get(cacheContext.getDynamicUniqueMark());
-		//获取缓存为空直接返回
-		if (null == cache) {
-			return null;
-		}
 		
 		//获取源方法关联表的修改时间
 		Set<Long> lastAlterTime = new HashSet<>();
@@ -62,7 +59,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 		for (Long alterTime : lastAlterTime) {
 			if(alterTime > lastQueryTime) {
 				LOGGER.debug("Cache is out of date on [{}]", cacheContext.getStaticUniqueMark());
-				return null;
+				throw new CacheOutOfDateException();
 			}
 		}
 		

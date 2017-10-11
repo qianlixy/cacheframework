@@ -29,37 +29,37 @@ public class DefaultCacheContext implements CacheContext {
 	/** 数据库表的最后修改时间的映射key */
 	private String LAST_ALTER_TIME = "LAST_ALTER_TIME";
 	
-	private CacheAdapter cacheContext;
+	private CacheAdapter cacheAdapter;
 
 	public DefaultCacheContext(CacheAdapter cacheAdapter) {
-		this.cacheContext = cacheAdapter;
+		this.cacheAdapter = cacheAdapter;
 	}
 
 	@Override
 	public void setSqls(List<String> sqls) {
 		if(null == sqls || sqls.size() < 0) return;
-		cacheContext.set(get(STATIC_UNIQUE_MARK).toString(), sqls);
+		cacheAdapter.set(get(STATIC_UNIQUE_MARK).toString(), sqls);
 	}
 
 	@Override
 	public List<String> getSqls() {
-		return (List<String>) cacheContext.get(get(STATIC_UNIQUE_MARK).toString());
+		return (List<String>) cacheAdapter.get(get(STATIC_UNIQUE_MARK).toString());
 	}
 
 	@Override
 	public void setTables(Collection<String> tables) {
 		if(null == tables || tables.size() < 0) return;
-		cacheContext.set(get(STATIC_UNIQUE_MARK).toString(), tables);
+		cacheAdapter.set(get(STATIC_UNIQUE_MARK).toString(), tables);
 	}
 
 	@Override
 	public Collection<String> getTables() {
-		return (Collection<String>) cacheContext.get(get(STATIC_UNIQUE_MARK).toString());
+		return (Collection<String>) cacheAdapter.get(get(STATIC_UNIQUE_MARK).toString());
 	}
 
 	@Override
 	public boolean isQuery() {
-		Map<String, Boolean> isQueryMap = (Map<String, Boolean>) cacheContext.get(IS_QUERY_METHOD);
+		Map<String, Boolean> isQueryMap = (Map<String, Boolean>) cacheAdapter.get(IS_QUERY_METHOD);
 		if(null == isQueryMap) throw new CacheIsNullException();
 		Boolean isQuery = isQueryMap.get(get(DYNAMIC_UNIQUE_MARK));
 		if(null == isQuery) throw new CacheIsNullException();
@@ -68,17 +68,17 @@ public class DefaultCacheContext implements CacheContext {
 
 	@Override
 	public void setQuery(boolean isQuery) {
-		Map<String, Boolean> isQueryMap = (Map<String, Boolean>) cacheContext.get(IS_QUERY_METHOD);
+		Map<String, Boolean> isQueryMap = (Map<String, Boolean>) cacheAdapter.get(IS_QUERY_METHOD);
 		if(null == isQueryMap) {
 			isQueryMap = new HashMap<>();
 		}
 		isQueryMap.put(String.valueOf(get(DYNAMIC_UNIQUE_MARK)), isQuery);
-		cacheContext.set(IS_QUERY_METHOD, isQueryMap);
+		cacheAdapter.set(IS_QUERY_METHOD, isQueryMap);
 	}
 
 	@Override
 	public long getLastQueryTime() {
-		Map<String, Long> isQueryMap = (Map<String, Long>) cacheContext.get(LAST_QUERY_TIME);
+		Map<String, Long> isQueryMap = (Map<String, Long>) cacheAdapter.get(LAST_QUERY_TIME);
 		if(null == isQueryMap) return 0L;
 		Long time = isQueryMap.get(get(DYNAMIC_UNIQUE_MARK));
 		return null == time ? 0L : time;
@@ -86,10 +86,10 @@ public class DefaultCacheContext implements CacheContext {
 
 	@Override
 	public void setLastQueryTime(ConsistentTime lastQueryTime) throws ConsistentTimeException {
-		Map<String, Long> isQueryMap = (Map<String, Long>) cacheContext.get(LAST_QUERY_TIME);
+		Map<String, Long> isQueryMap = (Map<String, Long>) cacheAdapter.get(LAST_QUERY_TIME);
 		if(null == isQueryMap) isQueryMap = new HashMap<>();
 		isQueryMap.put(String.valueOf(get(DYNAMIC_UNIQUE_MARK)), lastQueryTime.time());
-		cacheContext.set(LAST_QUERY_TIME, isQueryMap);
+		cacheAdapter.set(LAST_QUERY_TIME, isQueryMap);
 	}
 
 	@Override
@@ -101,15 +101,15 @@ public class DefaultCacheContext implements CacheContext {
 
 	@Override
 	public void setTableLastAlterTime(String table, ConsistentTime time) throws ConsistentTimeException {
-		Map<String, Long> isQueryMap = (Map<String, Long>) cacheContext.get(LAST_ALTER_TIME);
+		Map<String, Long> isQueryMap = (Map<String, Long>) cacheAdapter.get(LAST_ALTER_TIME);
 		if(null == isQueryMap) isQueryMap = new HashMap<>();
 		isQueryMap.put(table, time.time());
-		cacheContext.set(LAST_ALTER_TIME, isQueryMap);
+		cacheAdapter.set(LAST_ALTER_TIME, isQueryMap);
 	}
 
 	@Override
 	public long getTableLastAlterTime(String table) {
-		Map<String, Long> isQueryMap = (Map<String, Long>) cacheContext.get(LAST_ALTER_TIME);
+		Map<String, Long> isQueryMap = (Map<String, Long>) cacheAdapter.get(LAST_ALTER_TIME);
 		if(null == isQueryMap) return 0L;
 		Long time = isQueryMap.get(table);
 		return null == time ? 0L : time;

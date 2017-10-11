@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import io.github.qianlixy.cache.CacheConfig;
 import io.github.qianlixy.cache.CacheManager;
 import io.github.qianlixy.cache.exception.CacheOperationException;
+import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
 
 /**
@@ -27,8 +28,9 @@ public interface CacheProcesser {
 	/**
 	 * 获取源方法的缓存
 	 * @return 源方法的缓存（如果存在并且未失效）
+	 * @exception CacheOutOfDateException
 	 */
-	Object getCache();
+	Object getCache() throws CacheOutOfDateException;
 	
 	/**
 	 * 设置源方法的缓存。缓存时间使用默认缓存时间{@link CacheConfig#defaultCacheTime}

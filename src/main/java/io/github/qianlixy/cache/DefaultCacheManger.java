@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import io.github.qianlixy.cache.context.CacheContext;
 import io.github.qianlixy.cache.context.DefaultCacheContext;
 import io.github.qianlixy.cache.exception.CacheIsNullException;
+import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.InitCacheManagerException;
 import io.github.qianlixy.cache.exception.NonImplToStringException;
 import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
@@ -77,8 +78,10 @@ public class DefaultCacheManger implements CacheManager {
 			return execSourceMethodAndSetCache(sourceProcesser, cacheProcesser);
 		}
 		if(isQuery) {
-			Object cache = cacheProcesser.getCache();
-			if(null == cache) {
+			Object cache = null;
+			try {
+				cache = cacheProcesser.getCache();
+			} catch (CacheOutOfDateException e) {
 				return execSourceMethodAndSetCache(sourceProcesser, cacheProcesser);
 			}
 			LOGGER.debug("Use cache client data on [{}]", joinPoint.getSignature().toLongString());

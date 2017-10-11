@@ -74,6 +74,7 @@ public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
 					}
 				}
 			}
+			//TODO 多张表的处理
 			context.setTables(tables);
 			context.setQuery(!isAlter);
 		} catch (Throwable th) {
