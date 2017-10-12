@@ -3,7 +3,9 @@ package io.github.qianlixy.cache;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import io.github.qianlixy.cache.context.CacheContext;
+import io.github.qianlixy.cache.context.CacheKeyGenerator;
 import io.github.qianlixy.cache.context.DefaultCacheContext;
+import io.github.qianlixy.cache.context.MD5CacheKeyGenerator;
 import io.github.qianlixy.cache.exception.CacheIsNullException;
 import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.InitCacheManagerException;
@@ -25,6 +27,7 @@ public class DefaultCacheManger implements CacheManager {
 	
 	private CacheConfig cacheConfig;
 	private CacheContext cacheContext;
+	private CacheKeyGenerator cacheKeyGenerator;
 
 	public void setCacheConfig(CacheConfig cacheConfig) {
 		this.cacheConfig = cacheConfig;
@@ -53,12 +56,17 @@ public class DefaultCacheManger implements CacheManager {
 		
 		//完善配置信息
 		cacheConfig.getSQLParser().setCacheContext(cacheContext);
+		
+		//初始化缓存key生成策略
+		if(null == cacheKeyGenerator) {
+			cacheKeyGenerator = new MD5CacheKeyGenerator();
+		}
 	}
 
 	@Override
 	public Object doCache(ProceedingJoinPoint joinPoint) throws Throwable {
 		//注册拦截源方法
-		cacheContext.register(joinPoint);
+		cacheContext.register(joinPoint, cacheKeyGenerator);
 		//生成源方法包装类
 		SourceProcesser sourceProcesser = new DefaultSourceProcesser(joinPoint);
 		//生成源方法缓存操作包装类

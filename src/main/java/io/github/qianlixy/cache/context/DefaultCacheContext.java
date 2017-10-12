@@ -19,7 +19,7 @@ public class DefaultCacheContext implements CacheContext {
 	
 	/** 源方法的静态唯一标示key */
 	private String STATIC_UNIQUE_MARK = "STATIC_UNIQUE_MARK";
-	private String STATIC_UNIQUE_FULL_MARK = "STATIC_UNIQUE_FULL_MARK";
+	private String STATIC_METHOD_FULL_NAME = "STATIC_METHOD_FULL_NAME";
 	/** 源方法的动态唯一标示key */
 	private String DYNAMIC_UNIQUE_MARK = "DYNAMIC_UNIQUE_MARK";
 	/** 是否源方法是查询方法key */
@@ -93,10 +93,11 @@ public class DefaultCacheContext implements CacheContext {
 	}
 
 	@Override
-	public void register(ProceedingJoinPoint joinPoint) {
-		set(STATIC_UNIQUE_MARK, String.valueOf(joinPoint.getSignature().toLongString().hashCode()));
-		set(STATIC_UNIQUE_FULL_MARK, joinPoint.getSignature().toLongString());
-		set(DYNAMIC_UNIQUE_MARK, String.valueOf(UniqueMethodMarkUtil.uniqueMark(joinPoint).hashCode()));
+	public void register(ProceedingJoinPoint joinPoint, CacheKeyGenerator generator) {
+		String methodName = joinPoint.getSignature().toLongString();
+		set(STATIC_METHOD_FULL_NAME, methodName);
+		set(STATIC_UNIQUE_MARK, generator.generate(methodName));
+		set(DYNAMIC_UNIQUE_MARK, generator.generate(UniqueMethodMarkUtil.uniqueMark(joinPoint)));
 	}
 
 	@Override
@@ -148,7 +149,7 @@ public class DefaultCacheContext implements CacheContext {
 
 	@Override
 	public String toString() {
-		return get(STATIC_UNIQUE_FULL_MARK).toString();
+		return get(STATIC_METHOD_FULL_NAME).toString();
 	}
 	
 }
