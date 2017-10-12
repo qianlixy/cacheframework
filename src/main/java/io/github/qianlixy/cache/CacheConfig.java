@@ -20,7 +20,7 @@ public class CacheConfig {
 	private Object cacheClient;
 	
 	/** 缓存客户端抽象工厂 */
-	private static AbstractCacheAdapterFactory<?> cacheClientFactory;
+	private AbstractCacheAdapterFactory<?> cacheClientFactory;
 	
 	/** 数据库连接池。注意：暂支持DruidDataSource */
 	private DataSource dataSource;
@@ -39,12 +39,12 @@ public class CacheConfig {
 		this.cacheClient = cacheClient;
 	}
 
-	public static AbstractCacheAdapterFactory<?> getCacheClientFactory() {
+	public AbstractCacheAdapterFactory<?> getCacheClientFactory() {
 		return cacheClientFactory;
 	}
 
 	public void setCacheClientFactory(AbstractCacheAdapterFactory<?> cacheClientFactory) {
-		CacheConfig.cacheClientFactory = cacheClientFactory;
+		this.cacheClientFactory = cacheClientFactory;
 	}
 	
 	public DataSource getDataSource() {

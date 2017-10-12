@@ -35,12 +35,13 @@ public class DefaultCacheManger implements CacheManager {
 	@Override
 	public void init() throws Exception {
 		//初始化配置信息
-		if(null == CacheConfig.getCacheClientFactory()) {
+		if(null == cacheConfig.getCacheClientFactory()) {
 			if(null == cacheConfig.getCacheClient()) {
 				throw new InitCacheManagerException("AbstractCacheClientFactory and CacheClientAdapter cannot be null at the same time");
 			}
 			cacheConfig.setCacheClientFactory(AbstractCacheAdapterFactory.buildFactory(cacheConfig.getCacheClient()));
 		}
+		AbstractCacheAdapterFactory.setApplicationFactory(cacheConfig.getCacheClientFactory());
 		if(null == cacheConfig.getSQLParser()) {
 			if(null == cacheConfig.getDataSource()) {
 				throw new InitCacheManagerException("SQLParser and DataSource cannot be null at the same time");
@@ -51,7 +52,7 @@ public class DefaultCacheManger implements CacheManager {
 		}
 		
 		//初始化缓存上下文信息
-		cacheContext = new DefaultCacheContext(CacheConfig.getCacheClientFactory().buildCacheClient());
+		cacheContext = new DefaultCacheContext(cacheConfig.getCacheClientFactory().buildCacheClient());
 		
 		//完善配置信息
 		cacheConfig.getSQLParser().setCacheContext(cacheContext);
@@ -70,7 +71,7 @@ public class DefaultCacheManger implements CacheManager {
 		SourceProcesser sourceProcesser = new DefaultSourceProcesser(joinPoint);
 		//生成源方法缓存操作包装类
 		CacheProcesser cacheProcesser = new DefaultCacheProcesser(cacheContext,
-				CacheConfig.getCacheClientFactory().buildCacheClient(),
+				cacheConfig.getCacheClientFactory().buildCacheClient(),
 				cacheConfig.getDefaultCacheTime());
 		Boolean isQuery = cacheContext.isQuery();
 		if(null != isQuery && isQuery) {

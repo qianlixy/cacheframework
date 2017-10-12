@@ -3,8 +3,8 @@ package io.github.qianlixy.cache.context;
 import java.io.IOException;
 
 import io.github.qianlixy.cache.CacheAdapter;
-import io.github.qianlixy.cache.CacheConfig;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
+import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
 
 /**
  * 使用缓存客户端实现的一致性时间
@@ -20,7 +20,7 @@ public class CacheClientConsistentTime implements ConsistentTime {
 
 	private CacheClientConsistentTime() {
 		try {
-			cacheAdapter = CacheConfig.getCacheClientFactory().buildCacheClient();
+			cacheAdapter = AbstractCacheAdapterFactory.getApplicationFactory().buildCacheClient();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

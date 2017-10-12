@@ -14,6 +14,8 @@ import net.rubyeye.xmemcached.MemcachedClient;
  */
 public abstract class AbstractCacheAdapterFactory<T> {
 	
+	private static AbstractCacheAdapterFactory<?> applicationFactory;
+	
 	protected T client;
 
 	public void setClient(T client) {
@@ -29,6 +31,14 @@ public abstract class AbstractCacheAdapterFactory<T> {
 			return factory;
 		}
 		return null;
+	}
+
+	public static AbstractCacheAdapterFactory<?> getApplicationFactory() {
+		return applicationFactory;
+	}
+
+	public static void setApplicationFactory(AbstractCacheAdapterFactory<?> applicationFactory) {
+		AbstractCacheAdapterFactory.applicationFactory = applicationFactory;
 	}
 	
 }
