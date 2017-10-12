@@ -1,7 +1,6 @@
 package io.github.qianlixy.cache.context;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
@@ -20,22 +19,16 @@ public interface CacheContext {
 	Logger LOGGER = LoggerFactory.getLogger(CacheContext.class);
 
 	/**
-	 * 赋值当前缓存方法执行的多个SQL
-	 * @param sqls 当前缓存方法执行的SQL集合
-	 */
-	void setSqls(List<String> sqls);
-	
-	/**
-	 * 获取当前缓存方法执行的多个SQL
-	 * @return 当前缓存方法执行的SQL集合
-	 */
-	List<String> getSqls();
-	
-	/**
 	 * 赋值当前缓存方法使用到的多个数据库表
 	 * @param tables 当前缓存方法执行的SQL对应的table集合
 	 */
 	void setTables(Collection<String> tables);
+	
+	/**
+	 * 添加当前缓存方法使用的数据库表集合
+	 * @param table table集合
+	 */
+	void addTables(Collection<String> tables);
 	
 	/**
 	 * 获取当前缓存方法使用到的多个数据库表
@@ -47,7 +40,7 @@ public interface CacheContext {
 	 * 当前方法是否是查询方法，SQL中不存在一条DML语句就判定当前方法为查询方法。
 	 * @return true - 是查询方法，false - 不是查询方法
 	 */
-	boolean isQuery();
+	Boolean isQuery();
 	
 	/**
 	 * 赋值当前方法是否是查询方法

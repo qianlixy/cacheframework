@@ -53,17 +53,14 @@ public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
 			String dbType = getDbType(statement);
 			boolean isAlter = false;
 			LOGGER.debug("Intercepted SQL : [{}]", sql);
-			//context.addCacheMethodSql(sql);
 			List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, dbType.toLowerCase());
 			List<String> tables = new ArrayList<>();
 			for (SQLStatement sqlStatement : stmtList) {
 				MySqlSchemaStatVisitor visitor = new MySqlSchemaStatVisitor();
 				sqlStatement.accept(visitor);
 				Map<Name, TableStat> tableMap = visitor.getTables();
-//				LOGGER.debug("Intercepted table stat : {}", tableMap);
 				for (Name name : tableMap.keySet()) {
 					String tableName = name.getName();
-//					LOGGER.debug("Intercepted table : {}", tableName);
 					tables.add(tableName.toLowerCase());
 					TableStat tableStat = tableMap.get(name);
 					if (tableStat.getInsertCount() > 0
@@ -74,8 +71,7 @@ public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
 					}
 				}
 			}
-			//TODO 多张表的处理
-			context.setTables(tables);
+			context.addTables(tables);
 			context.setQuery(!isAlter);
 		} catch (Throwable th) {
 			LOGGER.error("Occur exception while parse SQL. exception message : {}", th.getMessage());

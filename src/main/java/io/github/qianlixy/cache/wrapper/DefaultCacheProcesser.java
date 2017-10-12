@@ -31,7 +31,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 	
 	@Override
 	public void putCache(Object source, int time) throws CacheOperationException, ConsistentTimeException {
-		if(null == source || !cacheContext.isQuery()) return;
+		if(null == source) return;
 		cacheAdapter.set(cacheContext.getDynamicUniqueMark(), source, time);
 		cacheContext.setLastQueryTime(CacheClientConsistentTime.newInstance());
 	}

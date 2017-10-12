@@ -2,13 +2,12 @@ package io.github.qianlixy.cache.context;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import io.github.qianlixy.cache.CacheAdapter;
-import io.github.qianlixy.cache.exception.CacheIsNullException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
 import io.github.qianlixy.cache.utils.UniqueMethodMarkUtil;
 
@@ -19,6 +18,7 @@ public class DefaultCacheContext implements CacheContext {
 	
 	/** 源方法的静态唯一标示key */
 	private String STATIC_UNIQUE_MARK = "STATIC_UNIQUE_MARK";
+	/** 源方法的全路径名称key */
 	private String STATIC_METHOD_FULL_NAME = "STATIC_METHOD_FULL_NAME";
 	/** 源方法的动态唯一标示key */
 	private String DYNAMIC_UNIQUE_MARK = "DYNAMIC_UNIQUE_MARK";
@@ -28,6 +28,8 @@ public class DefaultCacheContext implements CacheContext {
 	private String LAST_QUERY_TIME = "LAST_QUERY_TIME";
 	/** 数据库表的最后修改时间的映射key */
 	private String LAST_ALTER_TIME = "LAST_ALTER_TIME";
+	/** 源方法对应数据库表的映射key */
+	private String METHOD_TABLES_MAP = "METHOD_TABLES_MAP";
 	
 	private CacheAdapter cacheAdapter;
 
@@ -36,34 +38,32 @@ public class DefaultCacheContext implements CacheContext {
 	}
 
 	@Override
-	public void setSqls(List<String> sqls) {
-		if(null == sqls || sqls.size() < 0) return;
-		cacheAdapter.set(get(STATIC_UNIQUE_MARK).toString(), sqls);
-	}
-
-	@Override
-	public List<String> getSqls() {
-		return (List<String>) cacheAdapter.get(get(STATIC_UNIQUE_MARK).toString());
-	}
-
-	@Override
 	public void setTables(Collection<String> tables) {
-		if(null == tables || tables.size() < 0) return;
-		cacheAdapter.set(get(STATIC_UNIQUE_MARK).toString(), tables);
+		Map<String, Collection<String>> map = (Map<String, Collection<String>>) cacheAdapter.get(METHOD_TABLES_MAP);
+		if(null == map) map = new HashMap<>();
+		map.put(get(STATIC_UNIQUE_MARK), tables);
+		cacheAdapter.set(METHOD_TABLES_MAP, map);
+	}
+	
+	@Override
+	public void addTables(Collection<String> newTables) {
+		Collection<String> tables = getTables();
+		if(null == tables) tables = new HashSet<>();
+		tables.addAll(newTables);
+		setTables(tables);
 	}
 
 	@Override
 	public Collection<String> getTables() {
-		return (Collection<String>) cacheAdapter.get(get(STATIC_UNIQUE_MARK).toString());
+		Map<String, Collection<String>> map = (Map<String, Collection<String>>) cacheAdapter.get(METHOD_TABLES_MAP);
+		if(null == map) return null;
+		return map.get(get(STATIC_UNIQUE_MARK));
 	}
 
 	@Override
-	public boolean isQuery() {
+	public Boolean isQuery() {
 		Map<String, Boolean> isQueryMap = (Map<String, Boolean>) cacheAdapter.get(IS_QUERY_METHOD);
-		if(null == isQueryMap) throw new CacheIsNullException();
-		Boolean isQuery = isQueryMap.get(get(DYNAMIC_UNIQUE_MARK));
-		if(null == isQuery) throw new CacheIsNullException();
-		return isQuery;
+		return null == isQueryMap ? null : isQueryMap.get(get(DYNAMIC_UNIQUE_MARK));
 	}
 
 	@Override
@@ -72,9 +72,9 @@ public class DefaultCacheContext implements CacheContext {
 		if(null == isQueryMap) {
 			isQueryMap = new HashMap<>();
 		}
-		isQueryMap.put(String.valueOf(get(DYNAMIC_UNIQUE_MARK)), isQuery);
+		isQueryMap.put(get(DYNAMIC_UNIQUE_MARK), isQuery);
 		cacheAdapter.set(IS_QUERY_METHOD, isQueryMap);
-	}
+	}	
 
 	@Override
 	public long getLastQueryTime() {
@@ -88,7 +88,7 @@ public class DefaultCacheContext implements CacheContext {
 	public void setLastQueryTime(ConsistentTime lastQueryTime) throws ConsistentTimeException {
 		Map<String, Long> isQueryMap = (Map<String, Long>) cacheAdapter.get(LAST_QUERY_TIME);
 		if(null == isQueryMap) isQueryMap = new HashMap<>();
-		isQueryMap.put(String.valueOf(get(DYNAMIC_UNIQUE_MARK)), lastQueryTime.time());
+		isQueryMap.put(get(DYNAMIC_UNIQUE_MARK), lastQueryTime.time());
 		cacheAdapter.set(LAST_QUERY_TIME, isQueryMap);
 	}
 
@@ -120,8 +120,8 @@ public class DefaultCacheContext implements CacheContext {
 		get().put(key, value);
 	}
 
-	public Object get(Object key) {
-		return get().get(key);
+	public <T> T get(Object key) {
+		return (T) get().get(key);
 	}
 
 	public void remove(Object key) {
@@ -139,17 +139,17 @@ public class DefaultCacheContext implements CacheContext {
 
 	@Override
 	public String getDynamicUniqueMark() {
-		return get(DYNAMIC_UNIQUE_MARK).toString();
+		return get(DYNAMIC_UNIQUE_MARK);
 	}
 
 	@Override
 	public String getStaticUniqueMark() {
-		return get(STATIC_UNIQUE_MARK).toString();
+		return get(STATIC_UNIQUE_MARK);
 	}
 
 	@Override
 	public String toString() {
-		return get(STATIC_METHOD_FULL_NAME).toString();
+		return get(STATIC_METHOD_FULL_NAME);
 	}
 	
 }

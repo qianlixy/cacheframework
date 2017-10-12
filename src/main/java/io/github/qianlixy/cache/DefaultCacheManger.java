@@ -6,7 +6,6 @@ import io.github.qianlixy.cache.context.CacheContext;
 import io.github.qianlixy.cache.context.CacheKeyGenerator;
 import io.github.qianlixy.cache.context.DefaultCacheContext;
 import io.github.qianlixy.cache.context.MD5CacheKeyGenerator;
-import io.github.qianlixy.cache.exception.CacheIsNullException;
 import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.InitCacheManagerException;
 import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
@@ -73,13 +72,8 @@ public class DefaultCacheManger implements CacheManager {
 		CacheProcesser cacheProcesser = new DefaultCacheProcesser(cacheContext,
 				CacheConfig.getCacheClientFactory().buildCacheClient(),
 				cacheConfig.getDefaultCacheTime());
-		boolean isQuery = false;
-		try {
-			isQuery = cacheContext.isQuery();
-		} catch(CacheIsNullException e) {
-			return execSourceMethodAndSetCache(sourceProcesser, cacheProcesser);
-		}
-		if(isQuery) {
+		Boolean isQuery = cacheContext.isQuery();
+		if(null != isQuery && isQuery) {
 			Object cache = null;
 			try {
 				cache = cacheProcesser.getCache();
@@ -94,11 +88,9 @@ public class DefaultCacheManger implements CacheManager {
 	
 	private Object execSourceMethodAndSetCache(SourceProcesser sourceProcesser, CacheProcesser cacheProcesser) throws Throwable {
 		Object source = sourceProcesser.doProcess();
-		try {
+		Boolean isQuery = cacheContext.isQuery();
+		if(null != isQuery && isQuery)
 			cacheProcesser.putCache(source);
-		} catch (CacheIsNullException e) {
-			LOGGER.warn("Exist null data while set cache, so cannot set cache on [{}]", sourceProcesser.getFullMethodName());
-		}
 		return source;
 	}
 
