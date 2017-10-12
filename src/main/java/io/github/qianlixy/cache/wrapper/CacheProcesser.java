@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import io.github.qianlixy.cache.CacheConfig;
 import io.github.qianlixy.cache.CacheManager;
+import io.github.qianlixy.cache.exception.CacheNotExistException;
 import io.github.qianlixy.cache.exception.CacheOperationException;
 import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
@@ -28,15 +29,16 @@ public interface CacheProcesser {
 	/**
 	 * 获取源方法的缓存
 	 * @return 源方法的缓存（如果存在并且未失效）
-	 * @exception CacheOutOfDateException
+	 * @throws CacheOutOfDateException 缓存超时失效异常
+	 * @throws CacheNotExistException 缓存不存在异常
 	 */
-	Object getCache() throws CacheOutOfDateException;
+	Object getCache() throws CacheOutOfDateException, CacheNotExistException;
 	
 	/**
 	 * 设置源方法的缓存。缓存时间使用默认缓存时间{@link CacheConfig#defaultCacheTime}
 	 * @param cache 源方法的缓存对象
-	 * @throws ConsistentTimeException 
-	 * @throws CacheOperationException 
+	 * @throws ConsistentTimeException 一致性时间异常
+	 * @throws CacheOperationException 缓存操作异常
 	 * @see #putCache(Object, int)
 	 * @see CacheConfig#defaultCacheTime
 	 */
@@ -46,8 +48,8 @@ public interface CacheProcesser {
 	 * 设置源方法的缓存
 	 * @param cache 源方法的缓存对象
 	 * @param time 缓存有效时间
-	 * @throws ConsistentTimeException 
-	 * @throws CacheOperationException 
+	 * @throws ConsistentTimeException 一致性时间异常
+	 * @throws CacheOperationException 缓存操作异常
 	 * @see #putCache(Object)
 	 */
 	void putCache(Object cache, int time) throws CacheOperationException, ConsistentTimeException;
