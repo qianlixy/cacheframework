@@ -7,7 +7,6 @@ import io.github.qianlixy.cache.context.DefaultCacheContext;
 import io.github.qianlixy.cache.exception.CacheIsNullException;
 import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.InitCacheManagerException;
-import io.github.qianlixy.cache.exception.NonImplToStringException;
 import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
 import io.github.qianlixy.cache.parse.DruidSQLParser;
 import io.github.qianlixy.cache.wrapper.CacheProcesser;
@@ -59,12 +58,7 @@ public class DefaultCacheManger implements CacheManager {
 	@Override
 	public Object doCache(ProceedingJoinPoint joinPoint) throws Throwable {
 		//注册拦截源方法
-		try {
-			cacheContext.register(joinPoint);
-		} catch (NonImplToStringException e) {
-			LOGGER.warn(e.getMessage());
-			return joinPoint.proceed();
-		}
+		cacheContext.register(joinPoint);
 		//生成源方法包装类
 		SourceProcesser sourceProcesser = new DefaultSourceProcesser(joinPoint);
 		//生成源方法缓存操作包装类
@@ -95,7 +89,7 @@ public class DefaultCacheManger implements CacheManager {
 		try {
 			cacheProcesser.putCache(source);
 		} catch (CacheIsNullException e) {
-			LOGGER.warn("Exist null cache data when set cache, so cannot set cache on [{}]", sourceProcesser.getFullMethodName());
+			LOGGER.warn("Exist null data while set cache, so cannot set cache on [{}]", sourceProcesser.getFullMethodName());
 		}
 		return source;
 	}

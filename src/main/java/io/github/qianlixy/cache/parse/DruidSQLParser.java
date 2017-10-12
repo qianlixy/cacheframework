@@ -103,6 +103,7 @@ public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
 		List<Filter> filters = new ArrayList<>();
 		filters.add(this);
 		dds.setProxyFilters(filters);
+		LOGGER.info("DruidSQLParser bind to [{}]", dataSource.getClass());
 	}
 
 	@Override

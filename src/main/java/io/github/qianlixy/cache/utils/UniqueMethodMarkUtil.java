@@ -2,23 +2,30 @@ package io.github.qianlixy.cache.utils;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 
-import io.github.qianlixy.cache.exception.NonImplToStringException;
+import com.alibaba.fastjson.JSONObject;
 
 public class UniqueMethodMarkUtil {
 	
 	private static final String NULL = "null";
 	
-	private static String paramValue(Object param) throws NonImplToStringException {
-		if (null == param || null == param.toString()) {
-			return NULL;
-		} else if (param.toString().startsWith(param.getClass().getName())) {
-			throw new NonImplToStringException();
-		} else {
-			return param.toString(); 
+	public static String paramValue(Object param) {
+		if(null == param) return NULL;
+		if(param.getClass().isPrimitive() || isWrapClass(param.getClass())) 
+			return String.valueOf(param);
+		if(param instanceof String) 
+			return (String) param;
+		return JSONObject.toJSONString(param);
+	}
+	
+	private static boolean isWrapClass(Class<?> clazz) {
+		try {
+			return ((Class<?>) clazz.getField("TYPE").get(null)).isPrimitive();
+		} catch (Exception e) {
+			return false;
 		}
 	}
 	
-	public static final String uniqueMark(ProceedingJoinPoint pjp) throws NonImplToStringException {
+	public static final String uniqueMark(ProceedingJoinPoint pjp) {
 		String methodName = pjp.getSignature().getName();
 		Object[] params = pjp.getArgs();
 		StringBuilder mark = new StringBuilder(pjp.getTarget().getClass().getName());
@@ -37,12 +44,7 @@ public class UniqueMethodMarkUtil {
 						mark.deleteCharAt(mark.length() - 1);
 					mark.append("],");
 				} else {
-					try {
-						mark.append(paramValue(val)).append(",");
-					} catch (NonImplToStringException e) {
-						throw new NonImplToStringException("Cannot generate unique mark because [" 
-								+ val.getClass().getName() + "] not implement toString() method");
-					}
+					mark.append(paramValue(val)).append(",");
 				}
 			}
 			if (params.length > 0)

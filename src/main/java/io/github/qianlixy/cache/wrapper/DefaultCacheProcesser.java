@@ -58,7 +58,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 		long lastQueryTime = cacheContext.getLastQueryTime();
 		for (Long alterTime : lastAlterTime) {
 			if(alterTime > lastQueryTime) {
-				LOGGER.debug("Cache is out of date on [{}]", cacheContext.getStaticUniqueMark());
+				LOGGER.debug("Cache is out of date on [{}]", cacheContext.toString());
 				throw new CacheOutOfDateException();
 			}
 		}

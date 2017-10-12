@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
 
@@ -14,6 +16,8 @@ import io.github.qianlixy.cache.exception.ConsistentTimeException;
  * @since 1.0.0
  */
 public interface CacheContext {
+	
+	Logger LOGGER = LoggerFactory.getLogger(CacheContext.class);
 
 	/**
 	 * 赋值当前缓存方法执行的多个SQL
