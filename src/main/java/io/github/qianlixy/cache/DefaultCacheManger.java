@@ -6,14 +6,12 @@ import io.github.qianlixy.cache.context.CacheContext;
 import io.github.qianlixy.cache.context.CacheKeyGenerator;
 import io.github.qianlixy.cache.context.DefaultCacheContext;
 import io.github.qianlixy.cache.context.MD5CacheKeyGenerator;
-import io.github.qianlixy.cache.exception.CacheOutOfDateException;
+import io.github.qianlixy.cache.exception.ExecuteSourceMethodException;
 import io.github.qianlixy.cache.exception.InitCacheManagerException;
 import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
 import io.github.qianlixy.cache.parse.DruidSQLParser;
 import io.github.qianlixy.cache.wrapper.CacheProcesser;
 import io.github.qianlixy.cache.wrapper.DefaultCacheProcesser;
-import io.github.qianlixy.cache.wrapper.DefaultSourceProcesser;
-import io.github.qianlixy.cache.wrapper.SourceProcesser;
 
 /**
  * 默认的缓存管理器
@@ -65,34 +63,26 @@ public class DefaultCacheManger implements CacheManager {
 
 	@Override
 	public Object doCache(ProceedingJoinPoint joinPoint) throws Throwable {
-		//注册拦截源方法
-		cacheContext.register(joinPoint, cacheKeyGenerator);
-		//生成源方法包装类
-		SourceProcesser sourceProcesser = new DefaultSourceProcesser(joinPoint);
-		//生成源方法缓存操作包装类
-		CacheProcesser cacheProcesser = new DefaultCacheProcesser(cacheContext,
-				cacheConfig.getCacheClientFactory().buildCacheClient(),
-				cacheConfig.getDefaultCacheTime());
-		Boolean isQuery = cacheContext.isQuery();
-		if(null != isQuery && isQuery) {
-			Object cache = null;
-			try {
-				cache = cacheProcesser.getCache();
-			} catch (CacheOutOfDateException e) {
-				return execSourceMethodAndSetCache(sourceProcesser, cacheProcesser);
+		CacheProcesser cacheProcesser = null;
+		try {
+			//注册拦截源方法
+			cacheContext.register(joinPoint, cacheKeyGenerator);
+			//生成源方法缓存操作包装类
+			cacheProcesser = new DefaultCacheProcesser(joinPoint, cacheContext,
+					cacheConfig.getCacheClientFactory().buildCacheClient(),
+					cacheConfig.getDefaultCacheTime());
+			Boolean isQuery = cacheContext.isQuery();
+			if(null != isQuery && isQuery) {
+				Object cache = cacheProcesser.getCache();
+				LOGGER.debug("Use cache client data on [{}]", joinPoint.getSignature().toLongString());
+				return cache;
 			}
-			LOGGER.debug("Use cache client data on [{}]", joinPoint.getSignature().toLongString());
-			return cache;
+			return cacheProcesser.doProcessAndCache();
+		} catch(ExecuteSourceMethodException e) {
+			throw e;
+		} catch(Throwable th) {
+			return null == cacheProcesser ? joinPoint.proceed() : cacheProcesser.doProcessAndCache();
 		}
-		return execSourceMethodAndSetCache(sourceProcesser, cacheProcesser);
 	}
 	
-	private Object execSourceMethodAndSetCache(SourceProcesser sourceProcesser, CacheProcesser cacheProcesser) throws Throwable {
-		Object source = sourceProcesser.doProcess();
-		Boolean isQuery = cacheContext.isQuery();
-		if(null != isQuery && isQuery)
-			cacheProcesser.putCache(source);
-		return source;
-	}
-
 }

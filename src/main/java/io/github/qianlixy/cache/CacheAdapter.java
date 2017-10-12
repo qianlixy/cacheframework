@@ -30,7 +30,7 @@ public interface CacheAdapter {
 	 * 设置缓存
 	 * @param key 缓存key
 	 * @param value 缓存值
-	 * @param time 缓存有效时间
+	 * @param time 缓存有效时间，单位：分钟
 	 * @return true - 设置成功，false - 设置不成功
 	 */
 	boolean set(String key, Object value, int time);

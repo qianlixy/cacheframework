@@ -4,34 +4,41 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+
 import io.github.qianlixy.cache.CacheAdapter;
 import io.github.qianlixy.cache.context.CacheClientConsistentTime;
 import io.github.qianlixy.cache.context.CacheContext;
 import io.github.qianlixy.cache.exception.CacheNotExistException;
-import io.github.qianlixy.cache.exception.CacheOperationException;
 import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
+import io.github.qianlixy.cache.exception.ExecuteSourceMethodException;
 
 public class DefaultCacheProcesser implements CacheProcesser {
 	
+	private ThreadLocal<Object> executResult = new ThreadLocal<>();
+	
+	private ProceedingJoinPoint joinPoint;
 	private CacheContext cacheContext;
 	private CacheAdapter cacheAdapter;
 	private int defaultCacheTime;
 	
-	public DefaultCacheProcesser(CacheContext cacheContext, CacheAdapter cacheAdapter,
+	public DefaultCacheProcesser(ProceedingJoinPoint joinPoint, 
+			CacheContext cacheContext, CacheAdapter cacheAdapter, 
 			int defaultCacheTime) {
+		this.joinPoint = joinPoint;
 		this.cacheContext = cacheContext;
 		this.cacheAdapter = cacheAdapter;
 		this.defaultCacheTime = defaultCacheTime;
 	}
 
 	@Override
-	public void putCache(Object source) throws CacheOperationException, ConsistentTimeException {
+	public void putCache(Object source) throws ConsistentTimeException {
 		putCache(source, defaultCacheTime);
 	}
 	
 	@Override
-	public void putCache(Object source, int time) throws CacheOperationException, ConsistentTimeException {
+	public void putCache(Object source, int time) throws ConsistentTimeException {
 		cacheAdapter.set(cacheContext.getDynamicUniqueMark(), 
 				null == source ? new Null() : source, time);
 		cacheContext.setLastQueryTime(CacheClientConsistentTime.newInstance());
@@ -73,7 +80,57 @@ public class DefaultCacheProcesser implements CacheProcesser {
 
 	@Override
 	public String toString() {
-		return cacheContext.getStaticUniqueMark();
+		return getFullMethodName();
+	}
+
+	@Override
+	public Class<?> getTargetClass() {
+		return joinPoint.getTarget().getClass();
+	}
+
+	@Override
+	public String getMethodName() {
+		return joinPoint.getSignature().getName();
+	}
+
+	@Override
+	public Object[] getArgs() {
+		return joinPoint.getArgs();
+	}
+	
+	@Override
+	public String getFullMethodName() {
+		return joinPoint.getSignature().toLongString();
+	}
+
+	@Override
+	public Object doProcess() throws ExecuteSourceMethodException {
+		if(null == executResult.get()) {
+			LOGGER.debug("Start execute source method [{}]", getFullMethodName());
+			Object result = null;
+			try {
+				result = joinPoint.proceed();
+			} catch (Throwable e) {
+				throw new ExecuteSourceMethodException(e);
+			}
+			executResult.set(result);
+		}
+		return executResult.get();
+	}
+
+
+	@Override
+	public Object doProcessAndCache() throws ConsistentTimeException, ExecuteSourceMethodException {
+		return doProcessAndCache(defaultCacheTime);
+	}
+
+	@Override
+	public Object doProcessAndCache(int time) throws ConsistentTimeException, ExecuteSourceMethodException {
+		Object source = doProcess();
+		Boolean isQuery = cacheContext.isQuery();
+		if(null != isQuery && isQuery)
+			putCache(source, time);
+		return source;
 	}
 	
 }

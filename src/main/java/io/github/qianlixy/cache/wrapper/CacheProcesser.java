@@ -6,18 +6,20 @@ import org.slf4j.LoggerFactory;
 import io.github.qianlixy.cache.CacheConfig;
 import io.github.qianlixy.cache.CacheManager;
 import io.github.qianlixy.cache.exception.CacheNotExistException;
-import io.github.qianlixy.cache.exception.CacheOperationException;
 import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
+import io.github.qianlixy.cache.exception.ExecuteSourceMethodException;
 
 /**
- * <p>定义对缓存的处理包装接口</p>
- * <p>获取源方法的缓存，如果源方法的缓存不存在获取已失效返回null</p>
- * <p>设置源方法的缓存。给源方法设置缓存的入口只存在该接口中 </p>
- * <p>可以获取到缓存客户端做其他操作 </p>
+ * <p>定义源方法、缓存的包装接口</p>
+ * <ol>
+ *   <li>获取源方法Class、名称、参数</li>
+ *   <li>执行源方法并获取返回值</li>
+ *   <li>缓存源数据、获取缓存</li>
+ * </ol>
  * 
  * @author qianli_xy@163.com
- * @since 1.7
+ * @since 1.0.0
  */
 public interface CacheProcesser {
 	
@@ -35,23 +37,71 @@ public interface CacheProcesser {
 	Object getCache() throws CacheOutOfDateException, CacheNotExistException;
 	
 	/**
-	 * 设置源方法的缓存。缓存时间使用默认缓存时间{@link CacheConfig#defaultCacheTime}
-	 * @param cache 源方法的缓存对象
+	 * 缓存源方法的返回值。缓存时间使用默认缓存时间{@link CacheConfig#defaultCacheTime}
+	 * @param cache 源方法的返回值
 	 * @throws ConsistentTimeException 一致性时间异常
-	 * @throws CacheOperationException 缓存操作异常
 	 * @see #putCache(Object, int)
 	 * @see CacheConfig#defaultCacheTime
 	 */
-	void putCache(Object cache) throws CacheOperationException, ConsistentTimeException;
+	void putCache(Object cache) throws ConsistentTimeException;
 	
 	/**
-	 * 设置源方法的缓存
-	 * @param cache 源方法的缓存对象
-	 * @param time 缓存有效时间
+	 * 缓存源方法的返回值
+	 * @param cache 源方法的返回值
+	 * @param time 缓存有效时间，单位：分钟
 	 * @throws ConsistentTimeException 一致性时间异常
-	 * @throws CacheOperationException 缓存操作异常
 	 * @see #putCache(Object)
 	 */
-	void putCache(Object cache, int time) throws CacheOperationException, ConsistentTimeException;
+	void putCache(Object cache, int time) throws ConsistentTimeException;
+	
+	/**
+	 * 获取源方法的实例Class
+	 * @return 源方法的实例Class
+	 */
+	Class<?> getTargetClass();
+	
+	/**
+	 * <p>获取源方法的名称。形如：getMethodName</p>
+	 * @return 源方法的名称
+	 */
+	String getMethodName();
+	
+	/**
+	 * <p>获取源方法的参数，如果该方法没有参数，返回null</p>
+	 * @return 源方法参数数组
+	 */
+	Object[] getArgs();
+	
+	/**
+	 * <p>获取源方法的全名称，格式：[返回值类型] [类名].[方法名]([参数类型] ...)</p>
+	 * <p>形如：java.lang.String java.lang.String.toString()</p>
+	 * @return 源方法的全名称
+	 */
+	String getFullMethodName();
+
+	/**
+	 * <p>执行源方法，一个线程只执行源方法一次，防止对数据库造成额外压力</p>
+	 * @return 返回源方法执行后的返回值（如果源方法没有返回值或者源方法返回值为null将返回null）
+	 * @throws 会抛出源方法执行期间可能会出现的异常
+	 */
+	Object doProcess() throws ExecuteSourceMethodException;
+	
+	/**
+	 * <p>执行源方法，如果源方法为查询方法，则将查询结果缓存。</p>
+	 * <p>缓存时间为全局默认时间{@link CacheConfig#defaultCacheTime}</p>
+	 * @return 源方法执行结果（如果存在返回值，不存在则为null）
+	 * @throws Throwable 执行源方法遇到的异常
+	 * @see #doProcessAndCache(int)
+	 */
+	Object doProcessAndCache() throws ConsistentTimeException, ExecuteSourceMethodException;
+	
+	/**
+	 * <p>执行源方法，如果源方法为查询方法，则将查询结果缓存。</p>
+	 * @param time 缓存有效时间，单位：分钟
+	 * @return 源方法执行结果（如果存在返回值，不存在则为null）
+	 * @throws Throwable 执行源方法遇到的异常
+	 * @see #doProcessAndCache()
+	 */
+	Object doProcessAndCache(int time) throws ConsistentTimeException, ExecuteSourceMethodException;
 	
 }

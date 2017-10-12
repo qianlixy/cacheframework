@@ -28,8 +28,8 @@ public class CacheConfig {
 	/** SQL解析器 */
 	private SQLParser SQLParser;
 	
-	/** 全局默认缓存时间，单位：秒 */
-	private int defaultCacheTime = 3600;
+	/** 全局默认缓存时间，单位：分钟 */
+	private int defaultCacheTime = 120;
 
 	public Object getCacheClient() {
 		return cacheClient;
