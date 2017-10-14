@@ -1,9 +1,12 @@
 package io.github.qianlixy.cache;
 
+import java.util.Collection;
+
 import javax.sql.DataSource;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
+import io.github.qianlixy.cache.filter.FilterConfig;
 import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
 import io.github.qianlixy.cache.parse.SQLParser;
 
@@ -30,6 +33,9 @@ public class CacheConfig {
 	
 	/** 全局默认缓存时间，单位：分钟 */
 	private int defaultCacheTime = 120;
+	
+	/** 缓存过滤器配置集合 */
+	private Collection<FilterConfig> filterConfigs;
 
 	public Object getCacheClient() {
 		return cacheClient;
@@ -76,5 +82,17 @@ public class CacheConfig {
 	public void setDefaultCacheTime(int defaultCacheTime) {
 		this.defaultCacheTime = defaultCacheTime;
 	}
-	
+
+	/**
+	 * 缓存过滤器配置集合，由{@link CacheManager}统一管理分配
+	 * @return 缓存过滤器配置集合
+	 */
+	public Collection<FilterConfig> getFilterConfigs() {
+		return filterConfigs;
+	}
+
+	public void setFilterConfigs(Collection<FilterConfig> filterConfigs) {
+		this.filterConfigs = filterConfigs;
+	}
+
 }
