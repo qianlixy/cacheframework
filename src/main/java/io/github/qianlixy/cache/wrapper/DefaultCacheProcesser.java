@@ -1,5 +1,6 @@
 package io.github.qianlixy.cache.wrapper;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,20 +22,19 @@ public class DefaultCacheProcesser implements CacheProcesser {
 	private ProceedingJoinPoint joinPoint;
 	private CacheContext cacheContext;
 	private CacheAdapter cacheAdapter;
-	private int defaultCacheTime;
+	private int cacheTime;
 	
 	public DefaultCacheProcesser(ProceedingJoinPoint joinPoint, 
-			CacheContext cacheContext, CacheAdapter cacheAdapter, 
-			int defaultCacheTime) {
+			CacheContext cacheContext) throws IOException {
 		this.joinPoint = joinPoint;
 		this.cacheContext = cacheContext;
-		this.cacheAdapter = cacheAdapter;
-		this.defaultCacheTime = defaultCacheTime;
+		this.cacheAdapter = ApplicationContext.getCacheAdaperFactory().buildCacheAdapter();
+		this.cacheTime = ApplicationContext.getDefaultCacheTime();
 	}
 
 	@Override
 	public void putCache(Object source) throws ConsistentTimeException {
-		putCache(source, defaultCacheTime);
+		putCache(source, ApplicationContext.getDefaultCacheTime());
 	}
 	
 	@Override
@@ -121,7 +121,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 
 	@Override
 	public Object doProcessAndCache() throws ConsistentTimeException, ExecuteSourceMethodException {
-		return doProcessAndCache(defaultCacheTime);
+		return doProcessAndCache(ApplicationContext.getDefaultCacheTime());
 	}
 
 	@Override
@@ -131,6 +131,16 @@ public class DefaultCacheProcesser implements CacheProcesser {
 		if(null != isQuery && isQuery)
 			putCache(source, time);
 		return source;
+	}
+	
+	@Override
+	public int getCacheTime() {
+		return cacheTime;
+	}
+
+	@Override
+	public void setCacheTime(int cacheTime) {
+		this.cacheTime = cacheTime;
 	}
 	
 }

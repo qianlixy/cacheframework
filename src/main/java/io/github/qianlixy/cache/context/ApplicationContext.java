@@ -17,7 +17,10 @@ public class ApplicationContext {
 	public static final int KEY_CACHE_ADAPTER_FACTORY = 0x1;
 	
 	/** 一致性时间提供者key */
-	public static final int KEY_CONSISTENT_TIME_PROVIDER = 0x2; 
+	public static final int KEY_CONSISTENT_TIME_PROVIDER = 0x2;
+	
+	/** 全局缓存有效期key */
+	public static final int KEY_DEFAULT_CACHE_TIME = 0x3;
 	
 	private static Map<Integer, Object> context = new HashMap<>();
 	
@@ -43,6 +46,14 @@ public class ApplicationContext {
 	 */
 	public static ConsistentTimeProvider getConsistentTimeProvider() {
 		return (ConsistentTimeProvider) context.get(KEY_CONSISTENT_TIME_PROVIDER);
+	}
+	
+	/**
+	 * 全局缓存有效期
+	 * @return
+	 */
+	public static int getDefaultCacheTime() {
+		return (int) context.get(KEY_DEFAULT_CACHE_TIME);
 	}
 
 }

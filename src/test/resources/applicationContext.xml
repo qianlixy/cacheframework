@@ -11,7 +11,7 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 	default-autowire="byName" default-lazy-init="true">
 
-	<context:component-scan base-package="io.github.qianlixy.cache" />
+	<context:component-scan base-package="io.github.qianlixy.cache.business" />
 
 	<tx:annotation-driven mode="aspectj" />
 

@@ -103,5 +103,17 @@ public interface CacheProcesser {
 	 * @see #doProcessAndCache()
 	 */
 	Object doProcessAndCache(int time) throws ConsistentTimeException, ExecuteSourceMethodException;
+
+	/**
+	 * 获取拦截方法的缓存有效期
+	 * @return 缓存有效期，单位：分钟
+	 */
+	int getCacheTime();
+
+	/**
+	 * 赋值拦截方法的缓存有效期
+	 * @param cacheTime 缓存有效期，单位：分钟
+	 */
+	void setCacheTime(int cacheTime);
 	
 }

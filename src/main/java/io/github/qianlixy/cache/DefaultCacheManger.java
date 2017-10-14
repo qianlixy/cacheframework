@@ -46,8 +46,6 @@ public class DefaultCacheManger implements CacheManager {
 			cacheConfig.setCacheClientFactory(factory);
 		}
 		
-		//赋值全局上下文缓存适配器工厂对象
-		ApplicationContext.set(ApplicationContext.KEY_CACHE_ADAPTER_FACTORY, cacheConfig.getCacheClientFactory());
 		
 		//初始化SQLParser
 		if(null == cacheConfig.getSQLParser()) {
@@ -71,13 +69,17 @@ public class DefaultCacheManger implements CacheManager {
 			cacheKeyGenerator = new MD5CacheKeyProvider();
 		}
 		
-		//初始化一致性时间提供者
+		//赋值全局上下文缓存适配器工厂对象
+		ApplicationContext.set(ApplicationContext.KEY_CACHE_ADAPTER_FACTORY, cacheConfig.getCacheClientFactory());
+		//赋值全局上下文一致性时间提供者
 		ApplicationContext.set(ApplicationContext.KEY_CONSISTENT_TIME_PROVIDER, new ConsistentTimeProvider() {
 			@Override
 			public ConsistentTime newInstance() throws ConsistentTimeException {
 				return new ConsistentTime(cacheAdapter.consistentTime());
 			}
 		});
+		//赋值全局上下文默认缓存有效期
+		ApplicationContext.set(ApplicationContext.KEY_DEFAULT_CACHE_TIME, cacheConfig.getDefaultCacheTime());
 	}
 
 	@Override
@@ -87,9 +89,8 @@ public class DefaultCacheManger implements CacheManager {
 			//注册拦截源方法
 			cacheContext.register(joinPoint, cacheKeyGenerator);
 			//生成源方法缓存操作包装类
-			cacheProcesser = new DefaultCacheProcesser(joinPoint, cacheContext,
-					cacheConfig.getCacheClientFactory().buildCacheAdapter(),
-					cacheConfig.getDefaultCacheTime());
+			cacheProcesser = new DefaultCacheProcesser(joinPoint, cacheContext);
+			//判断缓存有效性
 			Boolean isQuery = cacheContext.isQuery();
 			if(null != isQuery && isQuery) {
 				Object cache = cacheProcesser.getCache();
