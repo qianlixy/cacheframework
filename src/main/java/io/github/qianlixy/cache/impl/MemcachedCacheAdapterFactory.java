@@ -8,7 +8,7 @@ import net.rubyeye.xmemcached.MemcachedClient;
 public class MemcachedCacheAdapterFactory extends AbstractCacheAdapterFactory<MemcachedClient> {
 
 	@Override
-	public CacheAdapter buildCacheClient() throws IOException {
+	public CacheAdapter buildCacheAdapter() throws IOException {
 		return new MemcachedAdapter(client);
 	}
 

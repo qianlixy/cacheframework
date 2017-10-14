@@ -19,7 +19,7 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
 import com.alibaba.druid.stat.TableStat.Name;
 
-import io.github.qianlixy.cache.context.CacheClientConsistentTime;
+import io.github.qianlixy.cache.context.ApplicationContext;
 import io.github.qianlixy.cache.context.CacheContext;
 
 public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
@@ -66,7 +66,8 @@ public class DruidSQLParser extends FilterEventAdapter implements SQLParser {
 					if (tableStat.getInsertCount() > 0
 							|| tableStat.getUpdateCount() > 0
 							|| tableStat.getDeleteCount() > 0) {
-						context.setTableLastAlterTime(tableName.toLowerCase(), CacheClientConsistentTime.newInstance());
+						context.setTableLastAlterTime(tableName.toLowerCase(), 
+								ApplicationContext.getConsistentTimeProvider().newInstance());
 						if (!isAlter) isAlter = true;
 					}
 				}

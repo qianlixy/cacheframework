@@ -12,17 +12,17 @@ import org.slf4j.LoggerFactory;
  * @author qianli_xy@163.com
  * @since 1.0.0
  */
-public class MD5CacheKeyGenerator implements CacheKeyGenerator {
+public class MD5CacheKeyProvider implements CacheKeyProvider {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(MD5CacheKeyGenerator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MD5CacheKeyProvider.class);
 
 	@Override
-	public String generate(String key) {
+	public String provideKey(String key) {
 		MessageDigest md5 = null;
 		try {
 			md5 = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
-			LOGGER.error("Cannot generate MD5 so use hash code on [{}]", key);
+			LOGGER.error("Unable to generate MD5, use hashcode instead on [{}]", key);
 			String hashCode = String.valueOf(key.hashCode());
 			LOGGER.debug("Generate cache key [{}] on [{}]", hashCode, key);
 			return hashCode;

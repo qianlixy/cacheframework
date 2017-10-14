@@ -66,7 +66,7 @@ public interface CacheContext {
 	 * 注册一个拦截到的方法
 	 * @param joinPoint 拦截的方法信息
 	 */
-	void register(ProceedingJoinPoint joinPoint, CacheKeyGenerator generator);
+	void register(ProceedingJoinPoint joinPoint, CacheKeyProvider generator);
 	
 	/**
 	 * 赋值数据库表最后的修改时间戳

@@ -14,16 +14,24 @@ import net.rubyeye.xmemcached.MemcachedClient;
  */
 public abstract class AbstractCacheAdapterFactory<T> {
 	
-	private static AbstractCacheAdapterFactory<?> applicationFactory;
-	
 	protected T client;
 
 	public void setClient(T client) {
 		this.client = client;
 	}
 	
-	public abstract CacheAdapter buildCacheClient() throws IOException;
+	/**
+	 * 构建缓存适配器
+	 * @return 缓存适配器
+	 * @throws IOException
+	 */
+	public abstract CacheAdapter buildCacheAdapter() throws IOException;
 	
+	/**
+	 * 使用缓存客户端构建缓存适配器工厂
+	 * @param cacheClient 具体的缓存客户端对象，暂仅支持Memcached
+	 * @return 缓存适配器工厂
+	 */
 	public static AbstractCacheAdapterFactory<?> buildFactory(Object cacheClient) {
 		if(cacheClient instanceof MemcachedClient) {
 			MemcachedCacheAdapterFactory factory = new MemcachedCacheAdapterFactory();
@@ -33,12 +41,4 @@ public abstract class AbstractCacheAdapterFactory<T> {
 		return null;
 	}
 
-	public static AbstractCacheAdapterFactory<?> getApplicationFactory() {
-		return applicationFactory;
-	}
-
-	public static void setApplicationFactory(AbstractCacheAdapterFactory<?> applicationFactory) {
-		AbstractCacheAdapterFactory.applicationFactory = applicationFactory;
-	}
-	
 }

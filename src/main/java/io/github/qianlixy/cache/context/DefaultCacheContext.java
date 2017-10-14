@@ -88,23 +88,23 @@ public class DefaultCacheContext implements CacheContext {
 	public void setLastQueryTime(ConsistentTime lastQueryTime) throws ConsistentTimeException {
 		Map<String, Long> isQueryMap = (Map<String, Long>) cacheAdapter.get(LAST_QUERY_TIME);
 		if(null == isQueryMap) isQueryMap = new HashMap<>();
-		isQueryMap.put(get(DYNAMIC_UNIQUE_MARK), lastQueryTime.time());
+		isQueryMap.put(get(DYNAMIC_UNIQUE_MARK), lastQueryTime.getTime());
 		cacheAdapter.set(LAST_QUERY_TIME, isQueryMap);
 	}
 
 	@Override
-	public void register(ProceedingJoinPoint joinPoint, CacheKeyGenerator generator) {
+	public void register(ProceedingJoinPoint joinPoint, CacheKeyProvider generator) {
 		String methodName = joinPoint.getSignature().toLongString();
 		set(STATIC_METHOD_FULL_NAME, methodName);
-		set(STATIC_UNIQUE_MARK, generator.generate(methodName));
-		set(DYNAMIC_UNIQUE_MARK, generator.generate(UniqueMethodMarkUtil.uniqueMark(joinPoint)));
+		set(STATIC_UNIQUE_MARK, generator.provideKey(methodName));
+		set(DYNAMIC_UNIQUE_MARK, generator.provideKey(UniqueMethodMarkUtil.uniqueMark(joinPoint)));
 	}
 
 	@Override
 	public void setTableLastAlterTime(String table, ConsistentTime time) throws ConsistentTimeException {
 		Map<String, Long> isQueryMap = (Map<String, Long>) cacheAdapter.get(LAST_ALTER_TIME);
 		if(null == isQueryMap) isQueryMap = new HashMap<>();
-		isQueryMap.put(table, time.time());
+		isQueryMap.put(table, time.getTime());
 		cacheAdapter.set(LAST_ALTER_TIME, isQueryMap);
 	}
 

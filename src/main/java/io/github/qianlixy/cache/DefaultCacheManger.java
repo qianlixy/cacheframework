@@ -2,10 +2,14 @@ package io.github.qianlixy.cache;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 
+import io.github.qianlixy.cache.context.ApplicationContext;
 import io.github.qianlixy.cache.context.CacheContext;
-import io.github.qianlixy.cache.context.CacheKeyGenerator;
+import io.github.qianlixy.cache.context.CacheKeyProvider;
+import io.github.qianlixy.cache.context.ConsistentTime;
+import io.github.qianlixy.cache.context.ConsistentTimeProvider;
 import io.github.qianlixy.cache.context.DefaultCacheContext;
-import io.github.qianlixy.cache.context.MD5CacheKeyGenerator;
+import io.github.qianlixy.cache.context.MD5CacheKeyProvider;
+import io.github.qianlixy.cache.exception.ConsistentTimeException;
 import io.github.qianlixy.cache.exception.ExecuteSourceMethodException;
 import io.github.qianlixy.cache.exception.InitCacheManagerException;
 import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
@@ -24,7 +28,7 @@ public class DefaultCacheManger implements CacheManager {
 	
 	private CacheConfig cacheConfig;
 	private CacheContext cacheContext;
-	private CacheKeyGenerator cacheKeyGenerator;
+	private CacheKeyProvider cacheKeyGenerator;
 
 	public void setCacheConfig(CacheConfig cacheConfig) {
 		this.cacheConfig = cacheConfig;
@@ -37,9 +41,15 @@ public class DefaultCacheManger implements CacheManager {
 			if(null == cacheConfig.getCacheClient()) {
 				throw new InitCacheManagerException("AbstractCacheClientFactory and CacheClientAdapter cannot be null at the same time");
 			}
-			cacheConfig.setCacheClientFactory(AbstractCacheAdapterFactory.buildFactory(cacheConfig.getCacheClient()));
+			AbstractCacheAdapterFactory<?> factory = AbstractCacheAdapterFactory.buildFactory(cacheConfig.getCacheClient());
+			if(null == factory) throw new InitCacheManagerException("Need to configurate cacheClientFactory because Cache clients that are not supported");
+			cacheConfig.setCacheClientFactory(factory);
 		}
-		AbstractCacheAdapterFactory.setApplicationFactory(cacheConfig.getCacheClientFactory());
+		
+		//赋值全局上下文缓存适配器工厂对象
+		ApplicationContext.set(ApplicationContext.KEY_CACHE_ADAPTER_FACTORY, cacheConfig.getCacheClientFactory());
+		
+		//初始化SQLParser
 		if(null == cacheConfig.getSQLParser()) {
 			if(null == cacheConfig.getDataSource()) {
 				throw new InitCacheManagerException("SQLParser and DataSource cannot be null at the same time");
@@ -49,16 +59,25 @@ public class DefaultCacheManger implements CacheManager {
 			cacheConfig.setSQLParser(SQLParser);
 		}
 		
-		//初始化缓存上下文信息
-		cacheContext = new DefaultCacheContext(cacheConfig.getCacheClientFactory().buildCacheClient());
+		CacheAdapter cacheAdapter = cacheConfig.getCacheClientFactory().buildCacheAdapter();
 		
-		//完善配置信息
+		//初始化缓存上下文信息
+		cacheContext = new DefaultCacheContext(cacheAdapter);
+		//完善SQLParser配置信息
 		cacheConfig.getSQLParser().setCacheContext(cacheContext);
 		
 		//初始化缓存key生成策略
 		if(null == cacheKeyGenerator) {
-			cacheKeyGenerator = new MD5CacheKeyGenerator();
+			cacheKeyGenerator = new MD5CacheKeyProvider();
 		}
+		
+		//初始化一致性时间提供者
+		ApplicationContext.set(ApplicationContext.KEY_CONSISTENT_TIME_PROVIDER, new ConsistentTimeProvider() {
+			@Override
+			public ConsistentTime newInstance() throws ConsistentTimeException {
+				return new ConsistentTime(cacheAdapter.consistentTime());
+			}
+		});
 	}
 
 	@Override
@@ -69,7 +88,7 @@ public class DefaultCacheManger implements CacheManager {
 			cacheContext.register(joinPoint, cacheKeyGenerator);
 			//生成源方法缓存操作包装类
 			cacheProcesser = new DefaultCacheProcesser(joinPoint, cacheContext,
-					cacheConfig.getCacheClientFactory().buildCacheClient(),
+					cacheConfig.getCacheClientFactory().buildCacheAdapter(),
 					cacheConfig.getDefaultCacheTime());
 			Boolean isQuery = cacheContext.isQuery();
 			if(null != isQuery && isQuery) {

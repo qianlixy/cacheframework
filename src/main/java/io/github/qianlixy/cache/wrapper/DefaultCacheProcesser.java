@@ -7,7 +7,7 @@ import java.util.Set;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import io.github.qianlixy.cache.CacheAdapter;
-import io.github.qianlixy.cache.context.CacheClientConsistentTime;
+import io.github.qianlixy.cache.context.ApplicationContext;
 import io.github.qianlixy.cache.context.CacheContext;
 import io.github.qianlixy.cache.exception.CacheNotExistException;
 import io.github.qianlixy.cache.exception.CacheOutOfDateException;
@@ -41,7 +41,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 	public void putCache(Object source, int time) throws ConsistentTimeException {
 		cacheAdapter.set(cacheContext.getDynamicUniqueMark(), 
 				null == source ? new Null() : source, time);
-		cacheContext.setLastQueryTime(CacheClientConsistentTime.newInstance());
+		cacheContext.setLastQueryTime(ApplicationContext.getConsistentTimeProvider().newInstance());
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 		//获取缓存
 		Object cache = cacheAdapter.get(cacheContext.getDynamicUniqueMark());
 		
-		//缓存为null，跑出缓存不存在异常
+		//缓存为null，抛出缓存不存在异常
 		if(null == cache) throw new CacheNotExistException();
 		
 		//获取源方法关联表的修改时间
