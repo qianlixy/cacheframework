@@ -34,6 +34,8 @@ public class CacheConfig {
 	private List<Filter> filters;
 	//缓存过滤器配置集合
 	private List<FilterConfig> filterConfigs;
+	//是否管理缓存。无论是否管理缓存，都会拦截并解析SQL
+	private boolean isManageCache; 
 
 	public Object getCacheClient() {
 		return cacheClient;
@@ -99,6 +101,14 @@ public class CacheConfig {
 
 	public void setFilterConfigs(List<FilterConfig> filterConfigs) {
 		this.filterConfigs = filterConfigs;
+	}
+
+	public boolean isManageCache() {
+		return isManageCache;
+	}
+
+	public void setManageCache(boolean isManageCache) {
+		this.isManageCache = isManageCache;
 	}
 	
 }

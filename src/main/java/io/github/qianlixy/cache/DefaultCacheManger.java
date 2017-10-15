@@ -171,6 +171,9 @@ public class DefaultCacheManger implements CacheManager {
 
 	@Override
 	public Object doCache(ProceedingJoinPoint joinPoint) throws Throwable {
+		//配置参数是否管理缓存为false，直接执行源代码并返回
+		if(!cacheConfig.isManageCache()) return joinPoint.proceed();
+		//管理缓存
 		CacheMethodProcesser cacheProcesser = null;
 		try {
 			//注册拦截源方法
