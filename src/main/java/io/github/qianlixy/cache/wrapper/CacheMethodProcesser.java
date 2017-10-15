@@ -21,7 +21,7 @@ import io.github.qianlixy.cache.exception.ExecuteSourceMethodException;
  * @author qianli_xy@163.com
  * @since 1.0.0
  */
-public interface CacheProcesser {
+public interface CacheMethodProcesser {
 	
 	/**
 	 * 便于子类打印日志。该日志打印对象绑定到{@link CacheManager}类上，便于日志管理

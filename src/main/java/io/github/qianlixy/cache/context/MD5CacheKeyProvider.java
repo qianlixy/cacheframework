@@ -17,7 +17,7 @@ public class MD5CacheKeyProvider implements CacheKeyProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MD5CacheKeyProvider.class);
 
 	@Override
-	public String provideKey(String key) {
+	public String process(String key) {
 		MessageDigest md5 = null;
 		try {
 			md5 = MessageDigest.getInstance("MD5");

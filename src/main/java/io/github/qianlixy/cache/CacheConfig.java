@@ -1,11 +1,12 @@
 package io.github.qianlixy.cache;
 
-import java.util.Collection;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
+import io.github.qianlixy.cache.filter.Filter;
 import io.github.qianlixy.cache.filter.FilterConfig;
 import io.github.qianlixy.cache.impl.AbstractCacheAdapterFactory;
 import io.github.qianlixy.cache.parse.SQLParser;
@@ -19,23 +20,20 @@ import io.github.qianlixy.cache.parse.SQLParser;
  */
 public class CacheConfig {
 	
-	/** 缓存客户端 */
+	//缓存客户端
 	private Object cacheClient;
-	
-	/** 缓存客户端抽象工厂 */
+	//缓存客户端抽象工厂
 	private AbstractCacheAdapterFactory<?> cacheClientFactory;
-	
-	/** 数据库连接池。注意：暂支持DruidDataSource */
+	//数据库连接池。注意：暂支持DruidDataSource
 	private DataSource dataSource;
-	
-	/** SQL解析器 */
+	//SQL解析器
 	private SQLParser SQLParser;
-	
-	/** 全局默认缓存时间，单位：分钟 */
+	//全局默认缓存时间，单位：分钟
 	private int defaultCacheTime = 120;
-	
-	/** 缓存过滤器配置集合 */
-	private Collection<FilterConfig> filterConfigs;
+	//过滤器集合
+	private List<Filter> filters;
+	//缓存过滤器配置集合
+	private List<FilterConfig> filterConfigs;
 
 	public Object getCacheClient() {
 		return cacheClient;
@@ -82,17 +80,25 @@ public class CacheConfig {
 	public void setDefaultCacheTime(int defaultCacheTime) {
 		this.defaultCacheTime = defaultCacheTime;
 	}
+	
+	public List<Filter> getFilters() {
+		return filters;
+	}
+
+	public void setFilters(List<Filter> filters) {
+		this.filters = filters;
+	}
 
 	/**
 	 * 缓存过滤器配置集合，由{@link CacheManager}统一管理分配
 	 * @return 缓存过滤器配置集合
 	 */
-	public Collection<FilterConfig> getFilterConfigs() {
+	public List<FilterConfig> getFilterConfigs() {
 		return filterConfigs;
 	}
 
-	public void setFilterConfigs(Collection<FilterConfig> filterConfigs) {
+	public void setFilterConfigs(List<FilterConfig> filterConfigs) {
 		this.filterConfigs = filterConfigs;
 	}
-
+	
 }

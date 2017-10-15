@@ -7,6 +7,11 @@ package io.github.qianlixy.cache.context;
  */
 public interface CacheKeyProvider {
 
-	String provideKey(String key);
+	/**
+	 * 处理缓存key并返回
+	 * @param key 缓存key
+	 * @return 处理后的key
+	 */
+	String process(String key);
 	
 }

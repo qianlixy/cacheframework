@@ -2,7 +2,7 @@ package io.github.qianlixy.cache.filter;
 
 import java.util.Collection;
 
-import io.github.qianlixy.cache.wrapper.CacheProcesser;
+import io.github.qianlixy.cache.wrapper.CacheMethodProcesser;
 
 /**
  * 拦截到的源方法的过滤器，
@@ -10,12 +10,12 @@ import io.github.qianlixy.cache.wrapper.CacheProcesser;
  * @since 1.0.0
  * @date 2017年10月14日 下午2:56:54
  */
-public class MethodMatchFilter implements Filter<MethodMatchFilterConfig> {
+public class MethodMatchFilter extends ConfigurableFilter<MethodMatchFilterConfig> {
 	
 	private MethodMatchFilterConfig filterConfig;
 	
 	@Override
-	public int order() {
+	public int getOrder() {
 		return 0;
 	}
 
@@ -25,13 +25,17 @@ public class MethodMatchFilter implements Filter<MethodMatchFilterConfig> {
 	}
 	
 	@Override
-	public Object doFilter(CacheProcesser cacheProcesser, 
-			FilterChain filterChain) throws Throwable {
+	public Object doFilter(CacheMethodProcesser cacheProcesser, 
+			Filter filterChain) throws Throwable {
 		//如果参数匹配集合为空，将拦截到的源方法视为匹配成功
+		if (null == filterConfig) {
+			return filterChain.doFilter(cacheProcesser, filterChain);
+		}
 		Collection<MethodMatchFilterConfigBean> configBeans = filterConfig.getConfigBeans();
 		if(null == configBeans || configBeans.size() <= 0) 
 			return filterChain.doFilter(cacheProcesser, filterChain);
 		
+		//匹配方法
 		for (MethodMatchFilterConfigBean config : configBeans) {
 			if(config.isFrom() ? matchFrom(config) : matchMethod(config, 
 					cacheProcesser.getTargetClass().getName(), cacheProcesser.getMethodName())) {

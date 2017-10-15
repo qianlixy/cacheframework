@@ -15,8 +15,15 @@ import io.github.qianlixy.cache.exception.CacheOutOfDateException;
 import io.github.qianlixy.cache.exception.ConsistentTimeException;
 import io.github.qianlixy.cache.exception.ExecuteSourceMethodException;
 
-public class DefaultCacheProcesser implements CacheProcesser {
+/**
+ * 默认的缓存方法包装类
+ * @author qianli_xy@163.com
+ * @since 1.0.0
+ * @date 2017年10月14日 下午10:34:59
+ */
+public class DefaultCacheMethodProcesser implements CacheMethodProcesser {
 	
+	//TODO 需要重构一个线程中只能执行一次源方法
 	private ThreadLocal<Object> executResult = new ThreadLocal<>();
 	
 	private ProceedingJoinPoint joinPoint;
@@ -24,7 +31,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 	private CacheAdapter cacheAdapter;
 	private int cacheTime;
 	
-	public DefaultCacheProcesser(ProceedingJoinPoint joinPoint, 
+	public DefaultCacheMethodProcesser(ProceedingJoinPoint joinPoint, 
 			CacheContext cacheContext) throws IOException {
 		this.joinPoint = joinPoint;
 		this.cacheContext = cacheContext;
@@ -68,7 +75,7 @@ public class DefaultCacheProcesser implements CacheProcesser {
 			long lastQueryTime = cacheContext.getLastQueryTime();
 			for (Long alterTime : lastAlterTime) {
 				if(alterTime > lastQueryTime) {
-					LOGGER.debug("Cache is out of date on [{}]", cacheContext.toString());
+					LOGGER.debug("Cached data is out of date on [{}]", cacheContext.toString());
 					throw new CacheOutOfDateException();
 				}
 			}

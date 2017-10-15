@@ -96,8 +96,8 @@ public class DefaultCacheContext implements CacheContext {
 	public void register(ProceedingJoinPoint joinPoint, CacheKeyProvider generator) {
 		String methodName = joinPoint.getSignature().toLongString();
 		set(STATIC_METHOD_FULL_NAME, methodName);
-		set(STATIC_UNIQUE_MARK, generator.provideKey(methodName));
-		set(DYNAMIC_UNIQUE_MARK, generator.provideKey(UniqueMethodMarkUtil.uniqueMark(joinPoint)));
+		set(STATIC_UNIQUE_MARK, generator.process(methodName));
+		set(DYNAMIC_UNIQUE_MARK, generator.process(UniqueMethodMarkUtil.uniqueMark(joinPoint)));
 	}
 
 	@Override

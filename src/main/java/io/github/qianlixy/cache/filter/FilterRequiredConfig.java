@@ -8,7 +8,7 @@ import io.github.qianlixy.cache.CacheConfig;
  * @author qianli_xy@163.com
  * @since 1.0.0
  * @date 2017年10月14日 下午3:38:21
- * @see Filter
+ * @see ConfigurableFilter
  * @see CacheConfig#getFilterConfigs()
  */
 public interface FilterRequiredConfig extends FilterConfig {
