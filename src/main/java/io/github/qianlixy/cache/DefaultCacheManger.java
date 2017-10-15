@@ -96,14 +96,15 @@ public class DefaultCacheManger implements CacheManager {
 				Class<FilterConfig> genericClass = 
 						(Class<FilterConfig>) ((ParameterizedType) filter.getClass().getGenericSuperclass())
 						.getActualTypeArguments()[0];
-				if(FilterRequiredConfig.class.isAssignableFrom(genericClass)) {
-					if(configClass.contains(genericClass)) {
-						//给filter赋值配置参数
-						((ConfigurableFilter) filter).setConfig(cacheConfig.getFilterConfigs()
-								.get(configClass.indexOf(genericClass)));
-					} else {
-						throw new InitCacheManagerException(genericClass + " is required");
-					}
+				//如果是必填配置接口，则检查是否存在相应类型的配置。不存在则抛出异常
+				if(FilterRequiredConfig.class.isAssignableFrom(genericClass)
+						&& !configClass.contains(genericClass)) {
+					throw new InitCacheManagerException(genericClass + " is required");
+				}
+				if(configClass.contains(genericClass)) {
+					//给filter赋值配置参数
+					((ConfigurableFilter) filter).setConfig(cacheConfig.getFilterConfigs()
+							.get(configClass.indexOf(genericClass)));
 				}
 			}
 		}

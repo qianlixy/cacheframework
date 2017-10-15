@@ -35,7 +35,7 @@ public class CacheConfig {
 	//缓存过滤器配置集合
 	private List<FilterConfig> filterConfigs;
 	//是否管理缓存。无论是否管理缓存，都会拦截并解析SQL
-	private boolean isManageCache; 
+	private boolean isManageCache = true; 
 
 	public Object getCacheClient() {
 		return cacheClient;
