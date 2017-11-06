@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.qianlixy</groupId>
 	<artifactId>smart-cache</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,7 +13,7 @@
 		<connection>scm:git:git@github.com:qianlixy/smart-cache.git</connection>
 		<developerConnection>scm:git:git@github.com:qianlixy/smart-cache.git</developerConnection>
 		<url>scm:git:git@github.com:qianlixy/smart-cache.git</url>
-		<tag>smart-cache-1.0.5</tag>
+		<tag>smart-cache</tag>
   	</scm>
 
 	<dependencies>
