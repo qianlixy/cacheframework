@@ -83,8 +83,7 @@ public class MethodMatchFilterTest {
 	@Test
 	//测试匹配线程栈方法
 	public void testDoFilter_fromMatch() throws Throwable {
-		config.setLevel(100);
-		configBeans.add(new MethodMatchFilterConfigBean("RemoteTestRunner.main", true, 100, false));
+		configBeans.add(new MethodMatchFilterConfigBean("MethodMatchFilterTest.testDoFilter_fromMatch", true, 100, false));
 		cacheProcesser.setCacheTime(100);
 		EasyMock.expectLastCall().once();
 		EasyMock.expect(filterChain.doFilter(cacheProcesser, filterChain)).andReturn(null);

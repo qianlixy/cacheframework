@@ -58,7 +58,7 @@
 			<list>
 				<bean class="java.net.InetSocketAddress">
 					<constructor-arg>
-						<value>192.168.206.100</value>
+						<value>localhost</value>
 					</constructor-arg>
 					<constructor-arg>
 						<value>11211</value>
